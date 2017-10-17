@@ -1,52 +1,40 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleAddress
 {
     public class Address
     {
-        private string name;
-        private string street;
-        private string city;
-        private string state;
-        private string zip;
-        private string country;
+        Dictionary<string, string> address;
 
-        public Address(string name, string street, string city, string state, string zip, string country)
+        public Address() : this("", "", "", "", "") {}
+
+        public Address(string street, string city, string state, string zip, string country)
         {
-            this.name = name;
-            this.street = street;
-            this.city = city;
-            this.state = state;
-            this.zip = zip;
-            this.country = country;
+            address = new Dictionary<string, string>();
+
+            address.Add("street", street);
+            address.Add("city", city);
+            address.Add("state", state);
+            address.Add("zip", zip);
+            address.Add("country", country);
         }
 
-        public string Name { get => name; }
-        public string Street { get => street; }
-        public string City { get => city; }
-        public string State { get => state; }
-        public string Zip { get => zip; }
-        public string Country { get => country; }
-
-        /// <summary>
-        /// Compares each field (case insensitive, culture insensitive, null == null).
-        /// All fields must match.
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public bool Equals(Address other)
+        public string getSpec(string addressKey)
         {
-            if (other == null)
-            {  // This is required
-                return false;
+            return address[addressKey];
+        }
+
+        public void setSpec(string addressKey, string addressValue)
+        {
+            // Throw an error if an invalid address key is passed in
+            if (!Enum.IsDefined(typeof(AddressKey), addressKey) || addressKey == "name")
+            {
+                throw new ArgumentOutOfRangeException();
             }
 
-            return this.name.Equals(other.Name) &&
-                this.street.Equals(other.Street) &&
-                this.city.Equals(other.City) &&
-                this.state.Equals(other.State) &&
-                this.zip.Equals(other.Zip) &&
-                this.country.Equals(other.Country);
+            address[addressKey] = addressValue;
         }
 
         /// <summary>
@@ -55,8 +43,7 @@ namespace ConsoleAddress
         /// <returns></returns>
         public override string ToString()
         {
-            var addressFields = new string[] { name, street, city, state, zip, country};
-            return String.Join(", ", addressFields);
+            return String.Join(", ", address.Select(x => x.Value).ToArray());
         }
 
         /// <summary>
@@ -68,14 +55,14 @@ namespace ConsoleAddress
         /// <remarks>Patterned after Int32.TryParse.</remarks>
         public static bool TryParse(string addressFields, out Address result)
         {
-            var delimiter = new string[] { ", "};
+            var delimiter = new string[] { ", " };
             var fields = addressFields.Split(delimiter, StringSplitOptions.None);
-            if (fields.Length != 6)
+            if (fields.Length != 5)
             {
                 result = null;
                 return false;
             }
-            result = new Address(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
+            result = new Address(fields[0], fields[1], fields[2], fields[3], fields[4]);
 
             return true;
         }

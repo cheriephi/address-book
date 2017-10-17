@@ -9,36 +9,43 @@ namespace ConsoleAddressTest
     /// </summary>
     class Helper
     {
+        internal static void AssertAreEqual(AddressBuilder expected, Address actual, string message)
+        {
+            Assert.AreEqual(expected.GetStreet(), actual.getSpec("street"), $"Street {message}");
+            Assert.AreEqual(expected.GetCity(), actual.getSpec("city"), $"City {message}");
+            Assert.AreEqual(expected.GetState(), actual.getSpec("state"), $"State {message}");
+            Assert.AreEqual(expected.GetZip(), actual.getSpec("zip"), $"Zip {message}");
+            Assert.AreEqual(expected.GetCountry(), actual.getSpec("country"), $"Country {message}");
+        }
+
         internal static void AssertAreEqual(AddressBuilder expected, Address actual)
         {
-            Assert.AreEqual(expected.GetName(), actual.Name, "Name");
-            Assert.AreEqual(expected.GetStreet(), actual.Street, "Street");
-            Assert.AreEqual(expected.GetCity(), actual.City, "City");
-            Assert.AreEqual(expected.GetState(), actual.State, "State");
-            Assert.AreEqual(expected.GetZip(), actual.Zip, "Zip");
-            Assert.AreEqual(expected.GetCountry(), actual.Country, "Country");
+            AssertAreEqual(expected, actual, "");
         }
 
         internal static void AssertAreEqual(AddressBookBuilder expected, AddressBook actual, string message)
         {
-            Assert.AreEqual(expected.GetAddressBuilders().Count, actual.CountOfAddresses, $"CountOfAddresses {message}");
+            var expectedBuilders = expected.GetAddressBuilders();
+            var actualAddresses = actual.GetAll();
+
+            Assert.AreEqual(expectedBuilders.Count, actualAddresses.Count, $"Count {message}");
 
             // Test that each of the addresses we expect exist inside the addresses that we actually have
-            foreach (var builder in expected.GetAddressBuilders())
+            foreach (var builder in expectedBuilders)
             {
-                var builtAddress = builder.Build();
-
                 bool found = false;
-                foreach (var address in actual.GetAll())
+                foreach (var address in actualAddresses)
                 {
-                    if (address.Equals(builtAddress))
+                    if (builder.Key == address.Key)
                     {
+                        AssertAreEqual(builder.Value, address.Value);
+
                         found = true;
                         break;
                     }
                 }
 
-                Assert.IsTrue(found, $"{builder.GetName()} Address is not found {message}");
+                Assert.IsTrue(found, $"{builder.Key} Address is not found {message}");
             }
         }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 /// <summary>
 /// Address \ contact functionality.
@@ -10,8 +9,6 @@ namespace ConsoleAddress
 {
     class Program
     {
-        private static AddressBook book = new AddressBook();
-
         /// <summary>
         /// Entry point. Performs the specified address book action.
         /// </summary>
@@ -38,38 +35,23 @@ namespace ConsoleAddress
             var usage = new string[]
             {
                 "Usage: AddressBook [command]",
-                "Where command is one of: ",
+                "Where command is one of:",
+                "    find [field] [value]                  - find the addresses.",
                 "    list                                  - list the addresses.",
-                "    add [address]                         - add to the addresses.",
-                "    update [old address] [new address]    - update the addresses.",
-                "    remove [address]                      - remove from the addresses.",
+                "    add [name] [address]                  - add to the addresses.",
+                "    update [name] [field] [new value]     - update the address.",
+                "    remove [name]                         - remove from the addresses.",
+                "    sort [field]                          - sort the addresses.",
+                "",
+                "Where field is [name | street | city | state | zip | country]",
                 "",
                 "Where address is a comma and space delimited string:",
-                "         [name] [street] [city] [state] [zip] [country]",
+                "         [street] [city] [state] [zip] [country]",
                 "    example:",
-                "         Michelle Obama, 1600 Pennsylvania Ave, Washington, DC, 20500, USA"
+                "         1600 Pennsylvania Ave, Washington, DC, 20500, USA",
             };
             
             return String.Join(Environment.NewLine, usage);
-        }
-
-        /// <summary>
-        /// Extracts addresses from input arguments.
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        /// <remarks>Ignores other arguments, such as the command to perform.</remarks>
-        private static Address[] getAddressesFromArgs(string[] args)
-        {
-            var addressList = new List<Address>();
-            foreach (var addressArg in args)
-            {
-                Address address;
-                var isValid = Address.TryParse(addressArg, out address);
-                if (isValid) { addressList.Add(address); }
-            }
-
-            return addressList.ToArray();
         }
 
         /// <summary>
@@ -81,29 +63,55 @@ namespace ConsoleAddress
         /// <remarks>Designed for testability.</remarks>
         internal static bool addressController(string[] args, out string result)
         {
-            var addresses = getAddressesFromArgs(args);
+            var book = new AddressBook();
 
+
+            if (args.Length == 3 && args[0] == "find" && Enum.IsDefined(typeof(AddressKey), args[1]))
+            {
+                var addresses = book.Find(args[1], args[2]);
+                result = AddressBook.ToString(addresses);
+                return true;
+            }
             if (args.Length == 1 && args[0] == "list")
             {
-                result = book.ToString();
+                var addresses = book.GetAll();
+                result = AddressBook.ToString(addresses);
                 return true;
             }
-            else if (args.Length == 2 && args[0] == "add" && addresses.Length == 1)
+            else if (args.Length == 3 && args[0] == "add")
             {
-                book.Add(addresses[0]);
-                result = book.ToString();
+                Address address;
+                var isValid = Address.TryParse(args[2], out address);
+                if (!isValid)
+                {
+                    result = getUsage();
+                    return false;
+                }
+
+                book.Add(args[1], address);
+                var addresses = book.GetAll();
+                result = AddressBook.ToString(addresses);
                 return true;
             }
-            else if (args.Length == 3 && args[0] == "update" && addresses.Length == 2)
+            else if (args.Length == 4 && args[0] == "update" && Enum.IsDefined(typeof(AddressKey), args[2]))
             {
-                book.Update(addresses[0], addresses[1]);
-                result = book.ToString();
+                book.Update(args[1], args[2], args[3]);
+                var addresses = book.GetAll();
+                result = AddressBook.ToString(addresses);
                 return true;
             }
-            else if (args.Length == 2 && args[0] == "remove" && addresses.Length == 1)
+            else if (args.Length == 2 && args[0] == "remove")
             {
-                book.Remove(addresses[0]);
-                result = book.ToString();
+                book.Remove(args[1]);
+                var addresses = book.GetAll();
+                result = AddressBook.ToString(addresses);
+                return true;
+            }
+            else if (args.Length == 2 && args[0] == "sort" && Enum.IsDefined(typeof(AddressKey), args[1]))
+            {
+                book.Sort(args[1]);
+                var addresses = book.GetAll();
+                result = AddressBook.ToString(addresses);
                 return true;
             }
             else

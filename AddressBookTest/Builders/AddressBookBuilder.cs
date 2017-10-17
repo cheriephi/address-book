@@ -7,18 +7,29 @@ namespace ConsoleAddressTest
 {
     internal class AddressBookBuilder
     {
-        List<AddressBuilder> addressBuilders = new List<AddressBuilder>
+        private Dictionary<string, AddressBuilder> defaultAddressBuilders = new Dictionary<string, AddressBuilder>()
         {
-            new AddressBuilder().SetName("Joe Bloggs").SetStreet("1 New St.").SetCity("Birmingham").SetState("England").SetZip("B01 3TN").SetCountry("UK"),
-            new AddressBuilder().SetName("John Doe").SetStreet("16 S 31st St.").SetCity("Boulder").SetState("CO").SetZip("80304").SetCountry("USA")
+            {"Joe Bloggs", new AddressBuilder().SetStreet("1 New St.").SetCity("Birmingham").SetState("England").SetZip("B01 3TN").SetCountry("UK") },
+            {"John Doe", new AddressBuilder().SetStreet("16 S 31st St.").SetCity("Boulder").SetState("CO").SetZip("80304").SetCountry("USA") },
+            {"Brent Leroy", new AddressBuilder().SetStreet("Corner Gas").SetCity("Dog River").SetState("SK").SetZip("S0G 4H0").SetCountry("CANADA") }
         };
 
-        internal List<AddressBuilder> GetAddressBuilders()
+        Dictionary<string, AddressBuilder> addressBuilders = new Dictionary<string, AddressBuilder>();
+
+        internal AddressBookBuilder()
+        {
+            foreach (var builder in defaultAddressBuilders)
+            {
+                addressBuilders.Add(builder.Key, builder.Value);
+            }
+        }
+
+        internal Dictionary<string, AddressBuilder> GetAddressBuilders()
         {
             return addressBuilders;
         }
 
-        internal AddressBookBuilder SetAddressBuilders(List<AddressBuilder> addressBuilders)
+        internal AddressBookBuilder SetAddressBuilders(Dictionary<string, AddressBuilder> addressBuilders)
         {
             this.addressBuilders = addressBuilders;
             return this;
@@ -28,10 +39,13 @@ namespace ConsoleAddressTest
         {
             var book = new AddressBook();
 
-            // Somehow get the addresses in the addressBuilders into the address book
+            // Add any non default addresses into the address book
             foreach (var builder in addressBuilders)
             {
-                book.Add(builder.Build());
+                if (!defaultAddressBuilders.ContainsKey(builder.Key))
+                {
+                    book.Add(builder.Key, builder.Value.Build());
+                }
             }
 
             return book;

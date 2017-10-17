@@ -1,124 +1,143 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ConsoleAddress
 {
     public class AddressBook
     {
-        private Address[] addresses;
-        public int CountOfAddresses { get => addresses.Length; }
+        private Dictionary<string, Address> addresses;
 
         /// <summary>
         /// Creates the address book with default entries.
         /// </summary>
         public AddressBook()
         {
-            addresses = new Address[]
+            addresses = new Dictionary<string, Address>()
             {
-                new Address("Joe Bloggs", "1 New St.", "Birmingham", "England", "B01 3TN", "UK"),
-                new Address("John Doe", "16 S 31st St.", "Boulder", "CO", "80304", "USA")
+                {"Joe Bloggs", new Address("1 New St.", "Birmingham", "England", "B01 3TN", "UK") },
+                {"John Doe", new Address("16 S 31st St.", "Boulder", "CO", "80304", "USA")},
+                {"Brent Leroy", new Address("Corner Gas", "Dog River", "SK", "S0G 4H0", "CANADA")}
             };
-        }
-
-        /// <summary>
-        /// Finds the input address.
-        /// </summary>
-        /// <param name="address"></param>
-        /// <returns>The address index, else -1 if not found.</returns>
-        private int findIndex(Address address)
-        {
-            for (int index = 0; index < addresses.Length; ++index)
-            {
-                if (addresses[index].Equals(address))
-                { 
-                    return index;
-                }
-            }
-            return -1;  // not found, returning an "impossible?" index
         }
 
         /// <summary>
         /// Returns the addresses.
         /// </summary>
-        /// <returns></returns>
-        /// <remarks>Someone could change the addresses array outside of this AddressBook class.</remarks>
-        public Address[] GetAll()
+        /// <returns></returns
+        public Dictionary<string, Address> GetAll()
         {
-            return addresses;
+            return new Dictionary<string, Address>(addresses);
+        }
+
+        /// <summary>
+        /// Returns matching address book entries based on the key to search.
+        /// </summary>
+        /// <param name="addressKey"></param>
+        /// <param name="addressValue"></param>
+        /// <returns></returns>
+        public Dictionary<string, Address> Find(string addressKey, string addressValue)
+        {
+            IEnumerable<KeyValuePair<string, Address>> matchingAddresses;
+
+            if (addressKey == "name")
+            {
+                // Find matching addresses by using a Where predicate lambda expression
+                matchingAddresses = addresses.Where(pair => pair.Key.Contains(addressValue));
+            }
+            else
+            {
+                matchingAddresses = addresses.Where(pair => pair.Value.getSpec(addressKey).Contains(addressValue));
+            }
+
+            // Return a dictionary; convert it from the KeyValuePair we have.
+            return matchingAddresses.ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         /// <summary>
         /// Adds the input address to the address book.
         /// </summary>
         /// <param name="addressToAdd"></param>
-        public void Add(Address addressToAdd)
+        public void Add(string name, Address addressToAdd)
         {
-            if (addressToAdd == null) { return; }
+            if (addressToAdd == null) { addressToAdd = new Address(); }
 
-            var index = findIndex(addressToAdd);
-            if (!(index >= 0 && index < addresses.Length))
-            {
-                // create a new larger array
-                var revisedAddresses = new Address[addresses.Length + 1];
-                // copy existing addresses into the new array
-                for (int i = 0; i < addresses.Length; i++)
-                {
-                    revisedAddresses[i] = addresses[i];
-                }
-                // copy the new address into the array
-                revisedAddresses[addresses.Length] = addressToAdd;
-                // replace the old array with the new array
-                addresses = revisedAddresses;
-            }
+            addresses.Add(name, addressToAdd);
         }
 
         /// <summary>
-        /// Adds the new address, replacing the old one if it exists.
-        /// Updates the reference identity if the old and new addresses have the same values, but different identities.
+        /// Updates the address book entry.
         /// </summary>
-        /// <param name="oldAddress"></param>
-        /// <param name="newAddress"></param>
-        public void Update(Address oldAddress, Address newAddress)
+        /// <param name="name"></param>
+        /// <param name="addressKey"></param>
+        /// <param name="addressValue"></param>
+        public void Update(string name, string addressKey, string addressValue)
         {
-            Remove(oldAddress);
-            Add(newAddress);
+            if (addressKey == "name")
+            {
+                if (addresses.ContainsKey(name))
+                {
+                    var address = addresses[name];
+
+                    Remove(name);
+                    Add(addressValue, address);
+                }
+                else
+                {
+                    Add(addressValue, new Address());
+                }
+            }
+                
+            else
+            { 
+                addresses[name].setSpec(addressKey, addressValue);
+            }
         }
 
         /// <summary>
         /// Removes the input address from the book if it exists.
         /// </summary>
-        /// <param name="addressToRemove"></param>
-        public void Remove(Address addressToRemove)
+        /// <param name="name"></param>
+        public void Remove(string name)
         {
-            var index = findIndex(addressToRemove);
-            if (index >= 0)
+            addresses.Remove(name);
+        }
+
+        /// <summary>
+        /// Sorts the address book by the input key.
+        /// </summary>
+        /// <param name="addressKey"></param>
+        public void Sort(string addressKey)
+        {
+            IOrderedEnumerable<KeyValuePair<string, Address>> sortedAddresses;
+
+            if (addressKey == "name")
             {
-                // create a new smaller array
-                var revisedAddresses = new Address[addresses.Length - 1];
-                var revisedIndex = 0;
-                // copy existing addresses into the new array
-                for (int i = 0; i < addresses.Length; i++)
-                {
-                    if (i != index)
-                    {
-                        revisedAddresses[revisedIndex] = addresses[i];
-                        revisedIndex++;
-                    }
-                }
-                // replace the old array with the new array
-                addresses = revisedAddresses;
+                // Find matching addresses by using a Where predicate lambda expression
+                sortedAddresses = addresses.OrderBy(pair => pair.Key);
             }
+            else
+            {
+                sortedAddresses = addresses.OrderBy(pair => pair.Value.getSpec(addressKey));
+            }
+
+            // Return a dictionary; convert it from the KeyValuePair we have.
+            addresses = sortedAddresses.ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         /// <summary>
         /// Returns a string with one line per address.
         /// </summary>
+        /// <param name="addressDictionary"></param>
         /// <returns></returns>
-        public override string ToString()
+        public static string ToString(Dictionary<string, Address> addressDictionary)
         {
-            // Takes the addresses array, gets the ToString() for each of those addresses into its
-            // own string array, then combines them with a new line per string.
-            var addressList = string.Join(Environment.NewLine, addresses.Select(x => x.ToString()).ToArray());
+            // Build a string of addresses: the name and the associated address.
+            // Use a Func (an inline delegate) to make the code more readable and easier to debug.
+            Func<KeyValuePair<string, Address>, string> addressBookItemToString = pair => pair.Key + ", " + pair.Value.ToString();
+
+            var addressList = string.Join(Environment.NewLine, addressDictionary.Select(addressBookItemToString).ToArray());
+
             return addressList;
         }
     }

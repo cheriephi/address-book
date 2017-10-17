@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Test.cmd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AddressBook\AddressBook.csproj">
