@@ -31,30 +31,6 @@ namespace ConsoleAddress
         }
 
         /// <summary>
-        /// Returns matching address book entries based on the key to search.
-        /// </summary>
-        /// <param name="addressKey"></param>
-        /// <param name="addressValue"></param>
-        /// <returns></returns>
-        public Dictionary<string, Address> Find(string addressKey, string addressValue)
-        {
-            IEnumerable<KeyValuePair<string, Address>> matchingAddresses;
-
-            if (addressKey == "name")
-            {
-                // Find matching addresses by using a Where predicate lambda expression
-                matchingAddresses = addresses.Where(pair => pair.Key.Contains(addressValue));
-            }
-            else
-            {
-                matchingAddresses = addresses.Where(pair => pair.Value.getSpec(addressKey).Contains(addressValue));
-            }
-
-            // Return a dictionary; convert it from the KeyValuePair we have.
-            return matchingAddresses.ToDictionary(pair => pair.Key, pair => pair.Value);
-        }
-
-        /// <summary>
         /// Adds the input address to the address book.
         /// </summary>
         /// <param name="addressToAdd"></param>
@@ -101,28 +77,6 @@ namespace ConsoleAddress
         public void Remove(string name)
         {
             addresses.Remove(name);
-        }
-
-        /// <summary>
-        /// Sorts the address book by the input key.
-        /// </summary>
-        /// <param name="addressKey"></param>
-        public void Sort(string addressKey)
-        {
-            IOrderedEnumerable<KeyValuePair<string, Address>> sortedAddresses;
-
-            if (addressKey == "name")
-            {
-                // Find matching addresses by using a Where predicate lambda expression
-                sortedAddresses = addresses.OrderBy(pair => pair.Key);
-            }
-            else
-            {
-                sortedAddresses = addresses.OrderBy(pair => pair.Value.getSpec(addressKey));
-            }
-
-            // Return a dictionary; convert it from the KeyValuePair we have.
-            addresses = sortedAddresses.ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         /// <summary>

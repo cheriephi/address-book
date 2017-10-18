@@ -36,12 +36,9 @@ namespace ConsoleAddress
             {
                 "Usage: AddressBook [command]",
                 "Where command is one of:",
-                "    find [field] [value]                  - find the addresses.",
-                "    list                                  - list the addresses.",
                 "    add [name] [address]                  - add to the addresses.",
                 "    update [name] [field] [new value]     - update the address.",
                 "    remove [name]                         - remove from the addresses.",
-                "    sort [field]                          - sort the addresses.",
                 "",
                 "Where field is [name | street | city | state | zip | country]",
                 "",
@@ -66,19 +63,7 @@ namespace ConsoleAddress
             var book = new AddressBook();
 
 
-            if (args.Length == 3 && args[0] == "find" && Enum.IsDefined(typeof(AddressKey), args[1]))
-            {
-                var addresses = book.Find(args[1], args[2]);
-                result = AddressBook.ToString(addresses);
-                return true;
-            }
-            if (args.Length == 1 && args[0] == "list")
-            {
-                var addresses = book.GetAll();
-                result = AddressBook.ToString(addresses);
-                return true;
-            }
-            else if (args.Length == 3 && args[0] == "add")
+            if (args.Length == 3 && args[0] == "add")
             {
                 Address address;
                 var isValid = Address.TryParse(args[2], out address);
@@ -103,13 +88,6 @@ namespace ConsoleAddress
             else if (args.Length == 2 && args[0] == "remove")
             {
                 book.Remove(args[1]);
-                var addresses = book.GetAll();
-                result = AddressBook.ToString(addresses);
-                return true;
-            }
-            else if (args.Length == 2 && args[0] == "sort" && Enum.IsDefined(typeof(AddressKey), args[1]))
-            {
-                book.Sort(args[1]);
                 var addresses = book.GetAll();
                 result = AddressBook.ToString(addresses);
                 return true;

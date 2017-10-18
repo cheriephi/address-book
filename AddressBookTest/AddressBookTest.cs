@@ -223,68 +223,6 @@ namespace ConsoleAddressTest
         }
         #endregion
 
-        #region Find tests
-        /// <summary>
-        /// Tests a random address key search.
-        /// </summary>
-        /// <remarks>Doesn't test all data, just the counts.</remarks>
-        [TestMethod]
-        public void FindTest()
-        {
-            var addressBookBuilder = new AddressBookBuilder();
-
-            var addressBuilders = addressBookBuilder.GetAddressBuilders();
-            addressBuilders.Add("Address 1", new AddressBuilder().SetStreet("Pqzy street"));
-            addressBuilders.Add("Address 2", new AddressBuilder().SetStreet("Pqzy avenue"));
-
-            var addressBook = addressBookBuilder.Build();
-
-            Helper.AssertAreEqual(addressBookBuilder, addressBook, "Before");
-
-            var result = addressBook.Find("street", "qzy");
-
-            Assert.AreEqual(2, result.Count, "Count");
-        }
-
-        [TestMethod]
-        public void FindNameTest()
-        {
-            var addressBookBuilder = new AddressBookBuilder();
-
-            var addressBuilders = addressBookBuilder.GetAddressBuilders();
-            addressBuilders.Add("Cupcake aa frosting", new AddressBuilder());
-            addressBuilders.Add("Cupcake zzaa frosting", new AddressBuilder());
-            addressBuilders.Add("Cupcake azza frosting", new AddressBuilder());
-            addressBuilders.Add("Cupcake aqq frosting", new AddressBuilder());
-
-            var addressBook = addressBookBuilder.Build();
-
-            Helper.AssertAreEqual(addressBookBuilder, addressBook, "Before");
-
-            var result = addressBook.Find("name", "zz");
-
-            Assert.AreEqual(2, result.Count, "Count");
-        }
-
-        [TestMethod]
-        public void FindNoResultsTest()
-        {
-            var addressBookBuilder = new AddressBookBuilder();
-
-            var addressBuilders = addressBookBuilder.GetAddressBuilders();
-            addressBuilders.Add("Address 1", new AddressBuilder().SetStreet("Pqzy street"));
-            addressBuilders.Add("Address 2", new AddressBuilder().SetStreet("Pqzy avenue"));
-
-            var addressBook = addressBookBuilder.Build();
-
-            Helper.AssertAreEqual(addressBookBuilder, addressBook, "Before");
-
-            var result = addressBook.Find("street", "qZy");
-
-            Assert.AreEqual(0, result.Count, "Count");
-        }
-        #endregion
-
         // TODO: Test GetAll doesn't break encapsulation. Can data be changed outside method under test?
     }
 }
