@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ConsoleAddress
 {
@@ -27,6 +28,7 @@ namespace ConsoleAddress
                 "    add [name] [address]                  - add to the addresses.",
                 "    update [name] [field] [new value]     - update the address.",
                 "    remove [name]                         - remove from the addresses.",
+                "    print                                 - print the addresses",
                 "",
                 "Where field is [name | street | city | state | zip | country]",
                 "",
@@ -62,25 +64,33 @@ namespace ConsoleAddress
 
                 book.Add(args[1], address);
                 var addresses = book.GetAll();
-                presenter.Print(addresses);
                 success = true;
             }
             else if (args.Length == 4 && args[0] == "update" && Enum.IsDefined(typeof(AddressKey), args[2]))
             {
                 book.Update(args[1], args[2], args[3]);
                 var addresses = book.GetAll();
-                presenter.Print(addresses);
                 success = true;
             }
             else if (args.Length == 2 && args[0] == "remove")
             {
                 book.Remove(args[1]);
                 var addresses = book.GetAll();
-                presenter.Print(addresses);
+                success = true;
+            }
+            else if (args.Length == 1 && args[0] == "print")
+            {
+                var addresses = book.GetAll();
+                Print(addresses);
                 success = true;
             }
 
             return success;
+        }
+
+        internal void Print(Dictionary<string, Address> addresses)
+        {
+            presenter.Print(addresses);
         }
     }
 }
