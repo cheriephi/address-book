@@ -1,6 +1,7 @@
 ﻿using ConsoleAddress;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
 
 namespace ConsoleAddressTest
 {
@@ -8,17 +9,20 @@ namespace ConsoleAddressTest
     public class ProgramTest
     {
         /// <summary>
-        /// Tests we output a help message if no args are passed in.
+        /// Tests we return failure if no args are passed in.
         /// </summary>
-        /// <remarks>The help should start with Usage.</remarks>
         [TestMethod]
         public void NoArgsTest()
         {
-            var args = new String[] { };
-            string output;
-            var success = Program.addressController(args, out output);
+            bool success = true;
+
+            using (var writer = new StreamWriter(Console.OpenStandardOutput()))
+            {
+                var controller = new Controller(new Presenter(writer));
+                success = controller.ProcessArgs(new String[] { });
+            }
+
             Assert.IsFalse(success);
-            Assert.IsTrue(output.StartsWith("Usage"));
         }
     }
 }

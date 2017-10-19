@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace ConsoleAddress
 {
@@ -77,22 +75,6 @@ namespace ConsoleAddress
         public void Remove(string name)
         {
             addresses.Remove(name);
-        }
-
-        /// <summary>
-        /// Returns a string with one line per address.
-        /// </summary>
-        /// <param name="addressDictionary"></param>
-        /// <returns></returns>
-        public static string ToString(Dictionary<string, Address> addressDictionary)
-        {
-            // Build a string of addresses: the name and the associated address.
-            // Use a Func (an inline delegate) to make the code more readable and easier to debug.
-            Func<KeyValuePair<string, Address>, string> addressBookItemToString = pair => pair.Key + ", " + pair.Value.ToString();
-
-            var addressList = string.Join(Environment.NewLine, addressDictionary.Select(addressBookItemToString).ToArray());
-
-            return addressList;
         }
     }
 }
