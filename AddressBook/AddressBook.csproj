@@ -46,6 +46,7 @@
     <Compile Include="AddressBook.cs" />
     <Compile Include="AddressKey.cs" />
     <Compile Include="Controller.cs" />
+    <Compile Include="IPrinter.cs" />
     <Compile Include="Presenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -13,18 +13,11 @@ namespace ConsoleAddress
     /// </summary>
     class Controller
     {
-        private Presenter presenter;
-
-        internal Controller(Presenter presenter)
-        {
-            this.presenter = presenter;
-        }
-
         /// <summary>
-        /// Help text.
+        /// Prints help text to the appropriate printer.
         /// </summary>
-        /// <returns></returns>
-        internal void ShowUsage()
+        /// <param name="presenter"></param>
+        internal void ShowUsage(Presenter presenter)
         {
             var usage = new string[]
             {
@@ -86,22 +79,32 @@ namespace ConsoleAddress
             else if (args.Length == 1 && args[0] == "print")
             {
                 var addresses = book.GetAll();
-                Print(addresses);
+                using (var printer = new Presenter())
+                {
+                    Print(printer, addresses);
+                }
                 success = true;
+            }
+            else
+            {
+                using (var printer = new Presenter())
+                {
+                    ShowUsage(printer);
+                }
             }
 
             return success;
         }
-        
+
         /// <summary>
-        /// Prints to the appropriate presenter. Translates domain specific data to content the presenter can understand.
+        /// Prints to the appropriate printer. Translates domain specific data to content the printer can understand.
         /// </summary>
         /// <param name="addresses"></param>
-        internal void Print(Dictionary<string, Address> addresses)
+        internal void Print(IPrinter printer, Dictionary<string, Address> addresses)
         {
             var content = addresses.ToDictionary(k => k.Key, k => k.Value.ToString());
 
-            presenter.Print(content);
+            printer.Print(content);
         }
     }
 }

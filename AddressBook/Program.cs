@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 /// <summary>
 /// Address \ contact functionality.
@@ -17,18 +16,13 @@ namespace ConsoleAddress
         /// <see cref="Usage"/>
         static void Main(String[] args)
         {
-            bool success = false;
-
-            using (var writer = new StreamWriter(Console.OpenStandardOutput()))
-            { 
-                var controller = new Controller(new Presenter(writer));
-                success = controller.ProcessArgs(args);
-                if (!success) { controller.ShowUsage(); }
-            }
+            var controller = new Controller();
+            var success = controller.ProcessArgs(args);
 
             // Return 0 if success; 1 if failure
             var exitCode = Convert.ToInt32(!success);
             Environment.Exit(exitCode);
         }
+
     }
 }

@@ -6,17 +6,26 @@ using System.Linq;
 namespace ConsoleAddress
 {
     /// <summary>
-    /// Model view controller (MVC) design pattern. The "view" or presenter or "screen presentation".
+    /// Model view controller (MVC) design pattern. The command line "view" or presenter or "screen presentation".
+    /// Defaults to a console view, but other streams are supported.
     /// </summary>
-    class Presenter
+    class Presenter : IDisposable, IPrinter
     {
         private StreamWriter writer;
+
+        #region Constructors
+        internal Presenter()
+        {
+            this.writer = new StreamWriter(Console.OpenStandardOutput());
+        }
+
         internal Presenter(StreamWriter writer)
         {
             this.writer = writer;
         }
+        #endregion
 
-        internal void Print(string text)
+        public void Print(string text)
         {
             writer.WriteLine(text);
             writer.Flush();
@@ -27,7 +36,7 @@ namespace ConsoleAddress
         /// </summary>
         /// <param name="dictionary"></param>
         /// <returns></returns>
-        internal void Print(Dictionary<string, string> dictionary)
+        public void Print(Dictionary<string, string> dictionary)
         {
             // Build a string of addresses: the name and the associated address.
             // Use a Func (an inline delegate) to make the code more readable and easier to debug.
@@ -37,6 +46,13 @@ namespace ConsoleAddress
 
             writer.WriteLine(addressList);
             writer.Flush();
+        }
+
+        public void Dispose()
+        {
+            writer.Flush();
+            writer.Close();
+            writer.Dispose();
         }
     }
 }
