@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleAddress
 {
     /// <summary>
+    /// Model view controller (MVC) design pattern. The controller. 
+    /// "Defines the way the user interface reacts to user input." (GoF)
+    /// In this case, the user interacts via the command-line. 
+    /// But unit testing wants to interact differently.
     /// Designed for testability (presentation layer dependency passed in).
     /// </summary>
     class Controller
@@ -87,10 +92,16 @@ namespace ConsoleAddress
 
             return success;
         }
-
+        
+        /// <summary>
+        /// Prints to the appropriate presenter. Translates domain specific data to content the presenter can understand.
+        /// </summary>
+        /// <param name="addresses"></param>
         internal void Print(Dictionary<string, Address> addresses)
         {
-            presenter.Print(addresses);
+            var content = addresses.ToDictionary(k => k.Key, k => k.Value.ToString());
+
+            presenter.Print(content);
         }
     }
 }
