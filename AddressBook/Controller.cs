@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace ConsoleAddress
 {
@@ -15,10 +16,10 @@ namespace ConsoleAddress
     class Controller
     {
         /// <summary>
-        /// Prints help text to the appropriate printer.
+        /// Prints help text to the appropriate stream.
         /// </summary>
-        /// <param name="presenter"></param>
-        internal void ShowUsage(Presenter presenter)
+        /// <param name="writer"></param>
+        internal void ShowUsage(StreamWriter writer)
         {
             var usage = new string[]
             {
@@ -41,7 +42,10 @@ namespace ConsoleAddress
 
             };
 
-            presenter.Print(string.Join(Environment.NewLine, usage));
+            var text = string.Join(Environment.NewLine, usage);
+
+            writer.WriteLine(text);
+            writer.Flush();
         }
 
         /// <summary>
@@ -83,60 +87,141 @@ namespace ConsoleAddress
             else if (args.Length == 1 && args[0] == "print")
             {
                 var addresses = book.GetAll();
-                using (var printer = new Presenter())
+
+                using (var writer = new StreamWriter(Console.OpenStandardOutput()))
                 {
-                    Print(printer, addresses);
+                    Print(writer, addresses);
                 }
                 success = true;
             }
             else if (args.Length == 2 && args[0] == "print")
             {
+                var fileName = args[1];
                 var addresses = book.GetAll();
 
-                var fileName = args[1];
-                var fileExtension = Path.GetExtension(fileName);
-                switch (fileExtension)
-                {
-                    case ".csv":
-                        using (var printer = new CsvPrinter(fileName))
-                        {
-                            Print(printer, addresses);
-                        }
-                        break;
-                    case ".xml":
-                        using (var printer = new XmlPrinter(fileName))
-                        {
-                            Print(printer, addresses);
-                        }
-                        break;
-                    default:
-                        success = false;
-                        break;
-                }
+                if (GetFileText(fileName, addresses, out string text))
+                { 
+                    using (var writer = new StreamWriter(File.OpenWrite(fileName)))
+                    {
+                        Print(writer, text);
+                    }
 
-                success = true;
+                    success = true;
+                }
             }
-            else
+
+            if (!success)
             {
-                using (var printer = new Presenter())
+                using (var writer = new StreamWriter(Console.OpenStandardOutput()))
                 {
-                    ShowUsage(printer);
+                    ShowUsage(writer);
                 }
             }
 
             return success;
         }
 
+        #region Print
         /// <summary>
-        /// Prints to the appropriate printer. Translates domain specific data to content the printer can understand.
+        /// Prints to the input StreamWriter, one line per address book item.
         /// </summary>
-        /// <param name="printer"></param>
+        /// <param name="writer">Console.OpenStandardOutput() creates a stream that writes to the console window.</param>
         /// <param name="addresses"></param>
-        internal void Print(IPrinter printer, Dictionary<string, Address> addresses)
+        /// <remarks>By passing the writer dependency in, the code is more flexible \ easier to test.
+        /// It is up to the calling process to construct and dispose of the writer.
+        /// </remarks>
+        internal void Print(StreamWriter writer, Dictionary<string, Address> addresses)
         {
-            var content = addresses.ToDictionary(k => k.Key, k => k.Value.ToString());
+            // Build a string of dictionary items: the key and the associated value.
+            // Use a Func (an inline delegate) to make the code more readable and easier to debug.
+            Func<KeyValuePair<string, Address>, string> itemToString = pair => pair.Key + ", " + pair.Value;
 
-            printer.Print(content);
+            var itemList = string.Join(Environment.NewLine, addresses.Select(itemToString).ToArray());
+
+            writer.WriteLine(itemList);
+            writer.Flush();
         }
+
+        internal void Print(StreamWriter writer, string text)
+        {
+            writer.WriteLine(text);
+            writer.Flush();
+        }
+        #endregion
+
+        internal bool GetFileText(string fullyQualifiedFileName, Dictionary<string, Address> addresses, out string text)
+        {
+            var fileExtension = Path.GetExtension(fullyQualifiedFileName).ToLower();
+            switch (fileExtension)
+            {
+                case ".csv":
+                    text = ToCsvString(addresses);
+                    break;
+                case ".xml":
+                    text = ToXmlString(addresses);
+                    break;
+                default:
+                    text = "";
+                    return false;
+            }
+
+            var path = Path.GetDirectoryName(fullyQualifiedFileName);
+            // Path will be empty if the file does not contain directory information.
+            // Exists only returns true if the process has permissions to read from it.
+            if (!string.IsNullOrEmpty(path) && !Directory.Exists(path))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        #region Transform addresses to string
+        /// <summary>
+        /// Outputs one comma-delimited per address book item, wrapped in quotes.
+        /// </summary>
+        /// <param name="addresses"></param>
+        /// <returns></returns>
+        /// <remarks>Currently doesn't handle when data contains data to be escaped,
+        /// but this would be the appropriate location to handle it.
+        /// (Csvs escape double quotes by using double double quotes).
+        /// </remarks>
+        private string ToCsvString(Dictionary<string, Address> addresses)
+        {
+            // Build a string of dictionary items: the key and the associated value.
+            // Use a Func (an inline delegate) to make the code more readable and easier to debug.
+            Func<KeyValuePair<string, Address>, string> itemToString = pair => "\"" + pair.Key + "\",\"" + pair.Value + "\"";
+
+            var itemList = string.Join(Environment.NewLine, addresses.Select(itemToString).ToArray());
+
+            return itemList;
+        }
+
+        /// <summary>
+        /// Outpus addresses as an xml string. 
+        /// </summary>
+        /// <param name="addresses"></param>
+        /// <returns>Xml string <root><contact name="key" address="value"></contact></root></returns>
+        /// <remarks>Currently doesn't handle when data contains data to be escaped,
+        /// but this would be the appropriate location to handle it.
+        /// </remarks>
+        /// <seealso cref="ToCsvString"/>
+        private string ToXmlString(Dictionary<string, Address> addresses)
+        {
+            var doc = new XDocument();
+            doc.Add(
+                new XElement("root", addresses.Select(pair =>
+                    new XElement
+                    (
+                        "contact",
+                        new XAttribute("name", pair.Key),
+                        new XAttribute("address", pair.Value)
+                    )
+                ))
+            );
+
+            return doc.ToString();
+        }
+        #endregion
     }
 }

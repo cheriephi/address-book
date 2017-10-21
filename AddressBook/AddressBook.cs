@@ -22,7 +22,7 @@ namespace ConsoleAddress
         /// <summary>
         /// Returns the addresses.
         /// </summary>
-        /// <returns></returns
+        /// <returns></returns>
         public Dictionary<string, Address> GetAll()
         {
             return new Dictionary<string, Address>(addresses);
@@ -31,6 +31,7 @@ namespace ConsoleAddress
         /// <summary>
         /// Adds the input address to the address book.
         /// </summary>
+        /// <param name="name"></param>
         /// <param name="addressToAdd"></param>
         public void Add(string name, Address addressToAdd)
         {
