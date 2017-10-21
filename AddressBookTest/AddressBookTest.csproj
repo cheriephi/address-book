@@ -56,6 +56,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ControllerTest.cs" />
     <Compile Include="CsvPrinterTest.cs" />
+    <Compile Include="XmlPrinterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

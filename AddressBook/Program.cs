@@ -13,7 +13,7 @@ namespace ConsoleAddress
         /// Entry point. Performs the specified address book action.
         /// </summary>
         /// <param name="args"></param>
-        /// <see cref="Usage"/>
+        /// <see cref="Controller.ShowUsage"/>
         static void Main(String[] args)
         {
             var controller = new Controller();

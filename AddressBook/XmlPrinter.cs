@@ -2,25 +2,26 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace ConsoleAddress
 {
     /// <summary>
-    /// Csv (excel) presenter.
+    /// Xml presenter.
     /// </summary>
     /// <exception cref="System.ArgumentException">When invalid file name passed in (invalid path, not a .csv).</exception>
     /// <remarks>Bubbles up unhandled exceptions, such as no write access to a directory or file lock contention.</remarks>
-    class CsvPrinter : IDisposable, IPrinter
+    class XmlPrinter : IDisposable, IPrinter
     {
         private StreamWriter writer;
 
         #region Constructors
-        internal CsvPrinter(string fullyQualifiedFileName)
+        internal XmlPrinter(string fullyQualifiedFileName)
         {
             var fileExtension = Path.GetExtension(fullyQualifiedFileName);
-            if (fileExtension.ToLower() != ".csv")
+            if (fileExtension.ToLower() != ".xml")
             {
-                throw new ArgumentException($"Only .csv files, not {fileExtension} files are supported.");
+                throw new ArgumentException($"Only .xml files, not {fileExtension} files are supported.");
             }
 
             var path = Path.GetDirectoryName(fullyQualifiedFileName);
@@ -37,23 +38,30 @@ namespace ConsoleAddress
         #endregion
 
         /// <summary>
-        /// Prints comma-delimited one line per dictionary item, wrapped in quotes.
+        /// Prints dictionary to xml. <root><contact name="key" address="value"></contact></root>
         /// </summary>
         /// <param name="dictionary"></param>
         /// <returns></returns>
         /// <remarks>Currently doesn't handle when data contains data to be escaped,
         /// but this would be the appropriate location to handle it.
-        /// (Csvs escape double quotes by using double double quotes).
+        /// The design needs refinement: the xml attribute names are domain specific, but the input is not.
         /// </remarks>
+        /// <seealso cref="CsvPrinter.Print(Dictionary{string, string})"/>
         public void Print(Dictionary<string, string> dictionary)
         {
-            // Build a string of dictionary items: the key and the associated value.
-            // Use a Func (an inline delegate) to make the code more readable and easier to debug.
-            Func<KeyValuePair<string, string>, string> itemToString = pair => "\"" + pair.Key + "\",\"" + pair.Value + "\"";
+            var doc = new XDocument();
+            doc.Add(
+                new XElement("root", dictionary.Select(pair =>
+                    new XElement
+                    (
+                        "contact",
+                        new XAttribute("name", pair.Key),
+                        new XAttribute("address", pair.Value)
+                    )
+                ))
+            );
 
-            var itemList = string.Join(Environment.NewLine, dictionary.Select(itemToString).ToArray());
-
-            writer.WriteLine(itemList);
+            writer.WriteLine(doc.ToString());
             writer.Flush();
         }
 

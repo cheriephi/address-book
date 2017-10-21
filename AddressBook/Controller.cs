@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace ConsoleAddress
@@ -7,7 +8,7 @@ namespace ConsoleAddress
     /// <summary>
     /// Model view controller (MVC) design pattern. The controller. 
     /// "Defines the way the user interface reacts to user input." (GoF)
-    /// In this case, the user interacts via the command-line. 
+    /// The application interacts via the command-line. 
     /// But unit testing wants to interact differently.
     /// Designed for testability (presentation layer dependency passed in).
     /// </summary>
@@ -34,7 +35,8 @@ namespace ConsoleAddress
                 "         1600 Pennsylvania Ave, Washington, DC, 20500, USA",
                 "Where field is [name | street | city | state | zip | country]",
                 "",
-                "Where file name is a fully qualified .csv file name",
+                "Where file name is a fully qualified .csv or .xml file name",
+                "   if [file name] is not specified, this prints to the console window",
                 "",
 
             };
@@ -43,10 +45,9 @@ namespace ConsoleAddress
         }
 
         /// <summary>
-        /// Performs address book functionality, minus presentation layer.
+        /// Performs address book functionality.
         /// </summary>
         /// <param name="args"></param>
-        /// <param name="result"></param>
         /// <returns>Whether the action succeeded.</returns>
         /// <remarks>Designed for testability.</remarks>
         internal bool ProcessArgs(string[] args)
@@ -91,10 +92,28 @@ namespace ConsoleAddress
             else if (args.Length == 2 && args[0] == "print")
             {
                 var addresses = book.GetAll();
-                using (var printer = new CsvPrinter(args[1]))
+
+                var fileName = args[1];
+                var fileExtension = Path.GetExtension(fileName);
+                switch (fileExtension)
                 {
-                    Print(printer, addresses);
+                    case ".csv":
+                        using (var printer = new CsvPrinter(fileName))
+                        {
+                            Print(printer, addresses);
+                        }
+                        break;
+                    case ".xml":
+                        using (var printer = new XmlPrinter(fileName))
+                        {
+                            Print(printer, addresses);
+                        }
+                        break;
+                    default:
+                        success = false;
+                        break;
                 }
+
                 success = true;
             }
             else
@@ -111,6 +130,7 @@ namespace ConsoleAddress
         /// <summary>
         /// Prints to the appropriate printer. Translates domain specific data to content the printer can understand.
         /// </summary>
+        /// <param name="printer"></param>
         /// <param name="addresses"></param>
         internal void Print(IPrinter printer, Dictionary<string, Address> addresses)
         {

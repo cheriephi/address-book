@@ -8,5 +8,9 @@ AddressBook update "John Doe" name "Bob Ball"
 pause
 AddressBook print
 pause
+AddressBook print foo.csv
+pause
+AddressBook print bar.xml
+pause
 
 cd ..\..\..\AddressBookTest
