@@ -32,19 +32,19 @@ namespace ConsoleAddress
         }
 
         /// <summary>
-        /// Prints one line per address.
+        /// Prints one line per dictionary item.
         /// </summary>
         /// <param name="dictionary"></param>
         /// <returns></returns>
         public void Print(Dictionary<string, string> dictionary)
         {
-            // Build a string of addresses: the name and the associated address.
+            // Build a string of dictionary items: the key and the associated value.
             // Use a Func (an inline delegate) to make the code more readable and easier to debug.
-            Func<KeyValuePair<string, string>, string> addressBookItemToString = pair => pair.Key + ", " + pair.Value;
+            Func<KeyValuePair<string, string>, string> itemToString = pair => pair.Key + ", " + pair.Value;
 
-            var addressList = string.Join(Environment.NewLine, dictionary.Select(addressBookItemToString).ToArray());
+            var itemList = string.Join(Environment.NewLine, dictionary.Select(itemToString).ToArray());
 
-            writer.WriteLine(addressList);
+            writer.WriteLine(itemList);
             writer.Flush();
         }
 

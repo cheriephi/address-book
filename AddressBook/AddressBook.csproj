@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\AddressBook.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,6 +47,7 @@
     <Compile Include="AddressBook.cs" />
     <Compile Include="AddressKey.cs" />
     <Compile Include="Controller.cs" />
+    <Compile Include="CsvPrinter.cs" />
     <Compile Include="IPrinter.cs" />
     <Compile Include="Presenter.cs" />
     <Compile Include="Program.cs" />

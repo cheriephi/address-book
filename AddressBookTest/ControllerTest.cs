@@ -5,6 +5,10 @@ using System.IO;
 
 namespace ConsoleAddressTest
 {
+    /// <summary>
+    /// Tests for address book controller.
+    /// </summary>
+    /// <remarks>Work in progress; not fully automated or covered due to project scope.</remarks>
     [TestClass]
     public class ControllerTest
     {

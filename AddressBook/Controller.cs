@@ -26,14 +26,17 @@ namespace ConsoleAddress
                 "    add [name] [address]                  - add to the addresses.",
                 "    update [name] [field] [new value]     - update the address.",
                 "    remove [name]                         - remove from the addresses.",
-                "    print                                 - print the addresses",
-                "",
-                "Where field is [name | street | city | state | zip | country]",
+                "    print [file name]?                    - print the addresses",
                 "",
                 "Where address is a comma and space delimited string:",
                 "         [street] [city] [state] [zip] [country]",
                 "    example:",
                 "         1600 Pennsylvania Ave, Washington, DC, 20500, USA",
+                "Where field is [name | street | city | state | zip | country]",
+                "",
+                "Where file name is a fully qualified .csv file name",
+                "",
+
             };
 
             presenter.Print(string.Join(Environment.NewLine, usage));
@@ -80,6 +83,15 @@ namespace ConsoleAddress
             {
                 var addresses = book.GetAll();
                 using (var printer = new Presenter())
+                {
+                    Print(printer, addresses);
+                }
+                success = true;
+            }
+            else if (args.Length == 2 && args[0] == "print")
+            {
+                var addresses = book.GetAll();
+                using (var printer = new CsvPrinter(args[1]))
                 {
                     Print(printer, addresses);
                 }
