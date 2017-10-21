@@ -29,6 +29,9 @@ namespace ConsoleAddressTest
         public void ValidLocalFileTest()
         {
             var fileName = "a.cSv"; // Use mixed file extension capitalization to test that also
+
+            if (File.Exists(fileName)) { File.Delete(fileName); }
+
             var book = new AddressBook();
             var addresses = book.GetAll();
             
@@ -36,7 +39,10 @@ namespace ConsoleAddressTest
             using (var printer = new CsvPrinter(fileName))
             {
                 controller.Print(printer, addresses);
+                // Print twice to ensure we handle it
+                controller.Print(printer, addresses);
             }
+
             // NOTE: validate data, clean up results.
          }
 

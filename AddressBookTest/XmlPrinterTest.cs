@@ -29,12 +29,17 @@ namespace ConsoleAddressTest
         public void ValidLocalFileTest()
         {
             var fileName = "a.xMl"; // Use mixed file extension capitalization to test that also
+
+            if (File.Exists(fileName)) { File.Delete(fileName); }
+
             var book = new AddressBook();
             var addresses = book.GetAll();
 
             var controller = new Controller();
             using (var printer = new XmlPrinter(fileName))
             {
+                controller.Print(printer, addresses);
+                // Print twice to ensure we handle it
                 controller.Print(printer, addresses);
             }
             // NOTE: validate data, clean up results.
