@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace ConsoleAddress
 {
+    /// <summary>
+    /// Manages all contact addresses in the address book.
+    /// </summary>
     [Serializable]
     public class AddressBook
     {

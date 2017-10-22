@@ -1,12 +1,12 @@
 ﻿using System;
 
-/// <summary>
-/// Address \ contact functionality.
-/// </summary>
-/// <remarks>Namespace avoids collisions with its class names.</remarks>
-/// <see href="https://blogs.msdn.microsoft.com/ericlippert/2010/03/09/do-not-name-a-class-the-same-as-its-namespace-part-one/"/>
+// Namespace avoids collisions with its class names.
+// see https://blogs.msdn.microsoft.com/ericlippert/2010/03/09/do-not-name-a-class-the-same-as-its-namespace-part-one/ 
 namespace ConsoleAddress
 {
+    /// <summary>
+    /// Address \ contact functionality.
+    /// </summary>
     class Program
     {
         /// <summary>
@@ -23,7 +23,6 @@ namespace ConsoleAddress
                 var controller = new Controller();
                 var success = controller.ProcessArgs(args);
 
-                // Return 0 if success; 1 if failure
                 exitCode = Convert.ToInt32(!success);
             }
             catch (Exception e)
@@ -33,6 +32,7 @@ namespace ConsoleAddress
             }
             finally
             {
+                // Return 0 if success; 1 if failure
                 Environment.Exit(exitCode);
             }
         }

@@ -31,6 +31,7 @@ namespace ConsoleAddress
                 "    remove [name]                         - remove from the addresses.",
                 "    print [file name]?                    - print the addresses",
                 "    save [file name]                      - saves the addresses",
+                "    load [file name]                      - loads saved addresses",
                 "",
                 "Where address is a comma and space delimited string:",
                 "         [street] [city] [state] [zip] [country]",
@@ -38,10 +39,11 @@ namespace ConsoleAddress
                 "         1600 Pennsylvania Ave, Washington, DC, 20500, USA",
                 "Where field is [name | street | city | state | zip | country]",
                 "",
-                "Where file name is a fully qualified .csv or .xml file name",
-                "   if [file name] is not specified, this prints to the console window",
+                "Where file name is a fully qualified file name",
                 "",
-
+                "Where print prints to a console window (when file name is not specified)",
+                "   or a .csv or .xml file",
+                "",
             };
 
             var text = string.Join(Environment.NewLine, usage);
@@ -125,11 +127,21 @@ namespace ConsoleAddress
                 {
                     using (var output = File.Create(fileName))
                     {
-                        var formatter = new BinaryFormatter();
-                        formatter.Serialize(output, book);
+                        Save(output, book);
                     }
 
                     success = true;
+                }
+            }
+            else if (args.Length == 2 && args[0] == "load")
+            {
+                var fileName = args[1];
+                if (File.Exists(fileName))
+                { 
+                    using (var input = File.OpenRead(fileName))
+                    {
+                        book = Load(input);
+                    }
                 }
             }
 
@@ -169,6 +181,31 @@ namespace ConsoleAddress
         {
             writer.WriteLine(text);
             writer.Flush();
+        }
+        #endregion
+
+        #region Serialization
+        /// <summary>
+        /// Saves (serializes) the input address book to the output stream.
+        /// </summary>
+        /// <param name="output"></param>
+        /// <param name="addressBook"></param>
+        internal void Save(Stream output, AddressBook addressBook)
+        {
+            var formatter = new BinaryFormatter();
+            formatter.Serialize(output, addressBook);
+        }
+
+        /// <summary>
+        /// Returns an address book serialized from the input stream.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        internal AddressBook Load(Stream input)
+        {
+            var formatter = new BinaryFormatter();
+            var addressBook = (AddressBook)formatter.Deserialize(input);
+            return addressBook;
         }
         #endregion
 
