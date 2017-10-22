@@ -1,27 +1,29 @@
 @Rem manual tests
 @cd ..\AddressBook\bin\Debug
+@del Addresses.txt && del foo.csv && del bar.xml
 @pause
 
-AddressBook update "John Doe" street "3645 Marine St."
+
+AddressBook add Addresses.txt "Michelle Obama" "1600 Pennsylvania Ave, Washington, DC, 20500, USA"
 @pause
-AddressBook update "John Doe" name "Bob Ball"
+AddressBook print Addresses.txt
 @pause
-AddressBook remove "Joe Bloggs"
+AddressBook update Addresses.txt "John Doe" street "3645 Marine St."
 @pause
-AddressBook print foo.csv
+AddressBook print Addresses.txt
 @pause
-AddressBook print bar.xml
+AddressBook update Addresses.txt "John Doe" name "Bob Ball"
 @pause
-AddressBook print
+AddressBook print Addresses.txt
 @pause
-AddressBook save Addresses.txt
+AddressBook remove Addresses.txt "Joe Bloggs"
+@pause
+AddressBook print Addresses.txt foo.csv
+@pause
+AddressBook print Addresses.txt bar.xml
+
 @rem dir *.txt
 @rem type Addresses.txt | more
 @rem cls
-@pause
-AddressBook load Addresses.txt
-@pause
-AddressBook print
-@dpause
 
 cd ..\..\..\AddressBookTest

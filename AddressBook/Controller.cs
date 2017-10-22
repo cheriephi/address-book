@@ -26,12 +26,10 @@ namespace ConsoleAddress
             {
                 "Usage: AddressBook [command]",
                 "Where command is one of:",
-                "    add [name] [address]                  - add to the addresses.",
-                "    update [name] [field] [new value]     - update the address.",
-                "    remove [name]                         - remove from the addresses.",
-                "    print [file name]?                    - print the addresses",
-                "    save [file name]                      - saves the addresses",
-                "    load [file name]                      - loads saved addresses",
+                "    add [address file] [name] [address]                - add to the addresses.",
+                "    update [address file] [name] [field] [new value]   - update the address.",
+                "    remove [address file] [name]                       - remove from the addresses.",
+                "    print [address file] [output file]?                - print the addresses",
                 "",
                 "Where address is a comma and space delimited string:",
                 "         [street] [city] [state] [zip] [country]",
@@ -39,10 +37,11 @@ namespace ConsoleAddress
                 "         1600 Pennsylvania Ave, Washington, DC, 20500, USA",
                 "Where field is [name | street | city | state | zip | country]",
                 "",
-                "Where file name is a fully qualified file name",
+                "Where file is a fully qualified file name",
+                "   the address file is the persistent storage",
                 "",
-                "Where print prints to a console window (when file name is not specified)",
-                "   or a .csv or .xml file",
+                "Where print prints to a console window (when output file is not specified)",
+                "   or a .csv or .xml output file",
                 "",
             };
 
@@ -50,6 +49,18 @@ namespace ConsoleAddress
 
             writer.WriteLine(text);
             writer.Flush();
+        }
+
+        private bool IsAddressFileValid(string addressFileName)
+        {
+            if (File.Exists(addressFileName)) { return true; }
+
+            // Check we can create the file if it doesn't exist
+            var path = Path.GetDirectoryName(addressFileName);
+
+            // Path will be empty if the file does not contain directory information.
+            // Exists only returns true if the process has permissions to read from it.
+            return (string.IsNullOrEmpty(path) || Directory.Exists(path));
         }
 
         /// <summary>
@@ -61,51 +72,131 @@ namespace ConsoleAddress
         internal bool ProcessArgs(string[] args)
         {
             var success = false;
-            var book = new AddressBook();
 
-            if (args.Length == 3 && args[0] == "add")
+            if (args.Length < 2) { goto InvalidArgs; }
+            var command = args[0];
+            var addressFileName = args[1];
+
+            var isAddressFileValid = IsAddressFileValid(addressFileName);
+            if (!isAddressFileValid) { goto InvalidArgs; }
+
+            var addressBook = new AddressBook();
+
+
+            if (args.Length == 4 && command == "add")
             {
-                Address address;
-                var isValid = Address.TryParse(args[2], out address);
-                if (!isValid)
+                // Load the address file if it exists
+                if (File.Exists(addressFileName))
                 {
-                    return success;
+                    using (var input = File.OpenRead(addressFileName))
+                    {
+                        addressBook = Load(input);
+                    }
                 }
 
-                book.Add(args[1], address);
-                var addresses = book.GetAll();
-                success = true;
-            }
-            else if (args.Length == 4 && args[0] == "update" && Enum.IsDefined(typeof(AddressKey), args[2]))
-            {
-                book.Update(args[1], args[2], args[3]);
-                var addresses = book.GetAll();
-                success = true;
-            }
-            else if (args.Length == 2 && args[0] == "remove")
-            {
-                book.Remove(args[1]);
-                var addresses = book.GetAll();
-                success = true;
-            }
-            else if (args.Length == 1 && args[0] == "print")
-            {
-                var addresses = book.GetAll();
 
+                // Add the address
+                var name = args[2];
+                var isValidAddress = Address.TryParse(args[3], out Address address);
+                if (!isValidAddress)
+                {
+                    goto InvalidArgs;
+                }
+                addressBook.Add(name, address);
+
+
+                // Save
+                using (var output = File.Create(addressFileName))
+                {
+                    Save(output, addressBook);
+                }
+
+                success = true;
+            }
+            else if (args.Length == 5 && command == "update" && Enum.IsDefined(typeof(AddressKey), args[3]))
+            {
+                // Load the address file if it exists
+                if (!File.Exists(addressFileName)) { goto InvalidArgs; }
+                using (var input = File.OpenRead(addressFileName))
+                {
+                    addressBook = Load(input);
+                }
+                
+
+                // Update the address
+                var name = args[2];
+                var addressKey = args[3];
+                var addressValue = args[4];
+
+                addressBook.Update(name, addressKey, addressValue);
+
+
+                // Save
+                using (var output = File.Create(addressFileName))
+                {
+                    Save(output, addressBook);
+                }
+
+                success = true;
+            }
+            else if (args.Length == 3 && command == "remove")
+            {
+                // Load the address file if it exists
+                if (!File.Exists(addressFileName)) { goto InvalidArgs; }
+                using (var input = File.OpenRead(addressFileName))
+                {
+                    addressBook = Load(input);
+                }
+
+
+                // Remove the address
+                var name = args[2];
+                addressBook.Remove(name);
+
+
+                // Save
+                using (var output = File.Create(addressFileName))
+                {
+                    Save(output, addressBook);
+                }
+
+                success = true;
+            }
+            else if (args.Length == 2 && command == "print")
+            {
+                // Load the address file if it exists
+                if (!File.Exists(addressFileName)) { goto InvalidArgs; }
+
+                using (var input = File.OpenRead(addressFileName))
+                {
+                    addressBook = Load(input);
+                }
+                var addresses = addressBook.GetAll();
+
+
+                // Print
                 using (var writer = new StreamWriter(Console.OpenStandardOutput()))
                 {
                     Print(writer, addresses);
                 }
                 success = true;
             }
-            else if (args.Length == 2 && args[0] == "print")
+            else if (args.Length == 3 && command == "print")
             {
-                var fileName = args[1];
-                var addresses = book.GetAll();
+                // Load the address file if it exists
+                if (!File.Exists(addressFileName)) { goto InvalidArgs; }
 
-                if (GetFileText(fileName, addresses, out string text))
+                using (var input = File.OpenRead(addressFileName))
                 {
-                    using (var writer = new StreamWriter(File.OpenWrite(fileName)))
+                    addressBook = Load(input);
+                }
+                var addresses = addressBook.GetAll();
+
+                // Print
+                var outputFileName = args[2];
+                if (GetFileText(outputFileName, addresses, out string text))
+                {
+                    using (var writer = new StreamWriter(File.OpenWrite(outputFileName)))
                     {
                         Print(writer, text);
                     }
@@ -113,38 +204,8 @@ namespace ConsoleAddress
                     success = true;
                 }
             }
-            else if (args.Length == 2 && args[0] == "save")
-            {
-                var fileName = args[1];
 
-                if (File.Exists(fileName)) { File.Delete(fileName); }
-
-                // Validate what we can
-                var path = Path.GetDirectoryName(fileName);
-                // Path will be empty if the file does not contain directory information.
-                // Exists only returns true if the process has permissions to read from it.
-                if (string.IsNullOrEmpty(path) || Directory.Exists(path))
-                {
-                    using (var output = File.Create(fileName))
-                    {
-                        Save(output, book);
-                    }
-
-                    success = true;
-                }
-            }
-            else if (args.Length == 2 && args[0] == "load")
-            {
-                var fileName = args[1];
-                if (File.Exists(fileName))
-                { 
-                    using (var input = File.OpenRead(fileName))
-                    {
-                        book = Load(input);
-                    }
-                }
-            }
-
+            InvalidArgs:
             if (!success)
             {
                 using (var writer = new StreamWriter(Console.OpenStandardOutput()))
