@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ConsoleAddress
 {
+    [Serializable]
     public class AddressBook
     {
         private Dictionary<string, Address> addresses;

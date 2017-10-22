@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Linq;
 
 namespace ConsoleAddress
@@ -29,6 +30,7 @@ namespace ConsoleAddress
                 "    update [name] [field] [new value]     - update the address.",
                 "    remove [name]                         - remove from the addresses.",
                 "    print [file name]?                    - print the addresses",
+                "    save [file name]                      - saves the addresses",
                 "",
                 "Where address is a comma and space delimited string:",
                 "         [street] [city] [state] [zip] [country]",
@@ -100,10 +102,31 @@ namespace ConsoleAddress
                 var addresses = book.GetAll();
 
                 if (GetFileText(fileName, addresses, out string text))
-                { 
+                {
                     using (var writer = new StreamWriter(File.OpenWrite(fileName)))
                     {
                         Print(writer, text);
+                    }
+
+                    success = true;
+                }
+            }
+            else if (args.Length == 2 && args[0] == "save")
+            {
+                var fileName = args[1];
+
+                if (File.Exists(fileName)) { File.Delete(fileName); }
+
+                // Validate what we can
+                var path = Path.GetDirectoryName(fileName);
+                // Path will be empty if the file does not contain directory information.
+                // Exists only returns true if the process has permissions to read from it.
+                if (string.IsNullOrEmpty(path) || Directory.Exists(path))
+                {
+                    using (var output = File.Create(fileName))
+                    {
+                        var formatter = new BinaryFormatter();
+                        formatter.Serialize(output, book);
                     }
 
                     success = true;

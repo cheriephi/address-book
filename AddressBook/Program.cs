@@ -16,12 +16,25 @@ namespace ConsoleAddress
         /// <see cref="Controller.ShowUsage"/>
         static void Main(String[] args)
         {
-            var controller = new Controller();
-            var success = controller.ProcessArgs(args);
+            int exitCode = 1;
 
-            // Return 0 if success; 1 if failure
-            var exitCode = Convert.ToInt32(!success);
-            Environment.Exit(exitCode);
+            try
+            {
+                var controller = new Controller();
+                var success = controller.ProcessArgs(args);
+
+                // Return 0 if success; 1 if failure
+                exitCode = Convert.ToInt32(!success);
+            }
+            catch (Exception e)
+            {
+                exitCode = 1;
+                Console.WriteLine(e.ToString());
+            }
+            finally
+            {
+                Environment.Exit(exitCode);
+            }
         }
 
     }

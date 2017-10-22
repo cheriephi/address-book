@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace ConsoleAddress
 {
+    [Serializable]
     public class Address
     {
         Dictionary<string, string> address;
