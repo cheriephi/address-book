@@ -55,6 +55,7 @@ namespace ConsoleAddress
         /// <param name="addressKey"></param>
         /// <param name="addressValue"></param>
         /// <see cref="AddressKey">The name key is not relevant.</see>
+        /// <exception cref="ArgumentOutOfRangeException">If addressKey is not a Address.AddressKey.</exception>
         public void setSpec(string addressKey, string addressValue)
         {
             // Throw an error if an invalid address key is passed in

@@ -9,9 +9,6 @@ namespace ConsoleAddressTest
     {
         private Dictionary<string, AddressBuilder> defaultAddressBuilders = new Dictionary<string, AddressBuilder>()
         {
-            {"Joe Bloggs", new AddressBuilder().SetStreet("1 New St.").SetCity("Birmingham").SetState("England").SetZip("B01 3TN").SetCountry("UK") },
-            {"John Doe", new AddressBuilder().SetStreet("16 S 31st St.").SetCity("Boulder").SetState("CO").SetZip("80304").SetCountry("USA") },
-            {"Brent Leroy", new AddressBuilder().SetStreet("Corner Gas").SetCity("Dog River").SetState("SK").SetZip("S0G 4H0").SetCountry("CANADA") }
         };
 
         Dictionary<string, AddressBuilder> addressBuilders = new Dictionary<string, AddressBuilder>();

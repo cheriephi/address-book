@@ -12,16 +12,11 @@ namespace ConsoleAddress
         private Dictionary<string, Address> addresses;
 
         /// <summary>
-        /// Creates the address book with default entries.
+        /// Creates the empty address book.
         /// </summary>
         public AddressBook()
         {
-            addresses = new Dictionary<string, Address>()
-            {
-                {"Joe Bloggs", new Address("1 New St.", "Birmingham", "England", "B01 3TN", "UK") },
-                {"John Doe", new Address("16 S 31st St.", "Boulder", "CO", "80304", "USA")},
-                {"Brent Leroy", new Address("Corner Gas", "Dog River", "SK", "S0G 4H0", "CANADA")}
-            };
+            addresses = new Dictionary<string, Address>() {};
         }
 
         /// <summary>
