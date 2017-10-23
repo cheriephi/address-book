@@ -4,12 +4,28 @@ using System.Linq;
 
 namespace ConsoleAddress
 {
+    /// <summary>
+    /// Manages contact addresses.
+    /// </summary>
+    [Serializable]
     public class Address
     {
         Dictionary<string, string> address;
 
+        #region Constructors
+        /// <summary>
+        /// Creates an empty address.
+        /// </summary>
         public Address() : this("", "", "", "", "") {}
 
+        /// <summary>
+        /// Creates an address from the data passed in.
+        /// </summary>
+        /// <param name="street"></param>
+        /// <param name="city"></param>
+        /// <param name="state"></param>
+        /// <param name="zip"></param>
+        /// <param name="country"></param>
         public Address(string street, string city, string state, string zip, string country)
         {
             address = new Dictionary<string, string>();
@@ -20,12 +36,26 @@ namespace ConsoleAddress
             address.Add("zip", zip);
             address.Add("country", country);
         }
+        #endregion
 
+        /// <summary>
+        /// Returns corresponding address value for the key passed in.
+        /// </summary>
+        /// <param name="addressKey"></param>
+        /// <returns></returns>
+        /// <see cref="AddressKey">The name key is not relevant.</see>
         public string getSpec(string addressKey)
         {
             return address[addressKey];
         }
 
+        /// <summary>
+        /// Updates corresponding address value for the key passed in.
+        /// </summary>
+        /// <param name="addressKey"></param>
+        /// <param name="addressValue"></param>
+        /// <see cref="AddressKey">The name key is not relevant.</see>
+        /// <exception cref="ArgumentOutOfRangeException">If addressKey is not a Address.AddressKey.</exception>
         public void setSpec(string addressKey, string addressValue)
         {
             // Throw an error if an invalid address key is passed in
