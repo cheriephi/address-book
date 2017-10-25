@@ -70,7 +70,7 @@
     <Compile Include="..\AddressBook\Controller.cs">
       <Link>Controller.cs</Link>
     </Compile>
-    <Compile Include="AddressItem.cs" />
+    <Compile Include="AddressViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>

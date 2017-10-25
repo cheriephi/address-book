@@ -13,13 +13,13 @@ namespace ConsoleAddress
     public partial class MainWindow : Window
     {
         private Controller controller;
-        private List<AddressItem> addresses;
+        private List<AddressViewModel> addresses;
 
     public MainWindow()
         {
             InitializeComponent();
             controller = new Controller();
-            AddressItem.AddressItemBook = new AddressBook();
+            AddressViewModel.AddressItemBook = new AddressBook();
         }
 
         #region Menu items
@@ -33,7 +33,7 @@ namespace ConsoleAddress
                 {
                     var addressBook = controller.Load(input);
 
-                    AddressItem.AddressItemBook = addressBook;
+                    AddressViewModel.AddressItemBook = addressBook;
 
                     throw new NotImplementedException(); // TODO: Need to set the data binding so it refreshes
                 }
@@ -49,7 +49,7 @@ namespace ConsoleAddress
 
                 using (var output = File.Create(fileName))
                 {
-                    controller.Save(output, AddressItem.AddressItemBook);
+                    controller.Save(output, AddressViewModel.AddressItemBook);
                 }
             }
         }
@@ -57,7 +57,11 @@ namespace ConsoleAddress
 
         private void DataGrid_Loaded(object sender, RoutedEventArgs e)
         {
-            addresses = new List<AddressItem>{};
+            addresses = new List<AddressViewModel>{
+                new AddressViewModel("Mom", "9026 SE 60th St", "Mercer Island", "WA", "98040", "USA"),
+                new AddressViewModel("Me", "7721 11th Ave NW", "Seattle", "WA", "98117", "USA"),
+                new AddressViewModel("You", "One Main Street", "San Francisco", "CA", "94117", "USA"),
+            };
             var grid = sender as DataGrid;
             grid.ItemsSource = addresses;
         }
