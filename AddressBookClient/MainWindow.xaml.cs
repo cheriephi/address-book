@@ -9,10 +9,14 @@ namespace ConsoleAddress
     /// </summary>
     public partial class MainWindow : Window
     {
+        private AddressBookViewModel addressBookViewModel;
+
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new AddressBookViewModel();
+            addressBookViewModel = new AddressBookViewModel();
+
+            this.DataContext = addressBookViewModel;
         }
 
         #region Menu items
@@ -27,10 +31,9 @@ namespace ConsoleAddress
                     var controller = new Controller();
                     var addressBook = controller.Load(input);
 
-                    AddressViewModel.AddressItemBook = addressBook;
-
                     //TODO: This is not properly refreshing the data
-                    this.DataContext = new AddressBookViewModel(addressBook);
+                    addressBookViewModel.AddressBook = addressBook;
+                    this.DataContext = addressBookViewModel;
                 }
             }
         }
@@ -45,7 +48,7 @@ namespace ConsoleAddress
                 using (var output = File.Create(fileName))
                 {
                     var controller = new Controller();
-                    controller.Save(output, AddressViewModel.AddressItemBook);
+                    controller.Save(output, addressBookViewModel.AddressBook);
                 }
             }
         }

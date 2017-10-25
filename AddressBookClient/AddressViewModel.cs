@@ -5,13 +5,17 @@ using System.Linq;
 namespace ConsoleAddress
 {
     /// <summary>
-    /// Wraps the domain address book classes into data that can easily bind to a view.
+    /// Wraps the domain address class into data that can easily bind to a view.
     /// </summary>
     public class AddressViewModel
     {
-        private static AddressBook addressBook;
-        private KeyValuePair<string, Address> addressItem;
-
+        private string name;
+        private string street;
+        private string city;
+        private string state;
+        private string zip;
+        private string country;
+        
         #region Constructors
         /// <summary>
         /// Default constructor.
@@ -23,63 +27,23 @@ namespace ConsoleAddress
 
         public AddressViewModel(string name, string street, string city, string state, string zip, string country)
         {
-            var address = new Address(street, city, state, zip, country);
-                addressBook.Add(name, address);
-
-            var addresses = addressBook.GetAll();
-            addressItem = addresses.FirstOrDefault(pair => pair.Key == name);
+            this.name = name;
+            this.street = street;
+            this.city = city;
+            this.state = state;
+            this.zip = zip;
+            this.country = country;
         }
 
-        public AddressViewModel(KeyValuePair<string, Address> addressItem)
-        {
-            this.addressItem = addressItem;
-        }
         #endregion
 
-        public static AddressBook AddressItemBook { get => addressBook; set => addressBook = value; }
-
         #region Accessors
-        public string Name
-        {
-            get => addressItem.Key;
-            set
-            { 
-                addressBook.Update(addressItem.Key, "name", value);
-
-                var addresses = addressBook.GetAll();
-                addressItem = addresses.FirstOrDefault(pair => pair.Key == value);
-            }
-        }
-
-        public string Street
-        {
-            get => addressItem.Value.getSpec("street");
-            set => addressBook.Update(addressItem.Key, "street", value);
-        }
-
-        public string City
-        {
-            get => addressItem.Value.getSpec("city");
-            set => addressBook.Update(addressItem.Key, "city", value);
-        }
-
-        public string State
-        {
-            get => addressItem.Value.getSpec("state");
-            set => addressBook.Update(addressItem.Key, "state", value);
-        }
-
-        public string Zip
-        {
-            get => addressItem.Value.getSpec("zip");
-            set => addressBook.Update(addressItem.Key, "zip", value);
-        }
-
-        public string Country
-        {
-            get => addressItem.Value.getSpec("country");
-            set => addressBook.Update(addressItem.Key, "country", value);
-        }
+        public string Name { get => name; set => name = value; }
+        public string Street { get => street; set => street = value; }
+        public string City { get => city; set => city = value; }
+        public string State { get => state; set => state = value; }
+        public string Zip { get => zip; set => zip = value; }
+        public string Country { get => country; set => country = value; }
         #endregion
     }
 }
