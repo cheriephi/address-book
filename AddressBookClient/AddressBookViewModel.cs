@@ -1,7 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿using ConsoleAddress;
+using System.Collections.ObjectModel;
 using System.IO;
 
-namespace ConsoleAddress
+namespace AddressBookClient
 {
     /// <summary>
     /// Communicates between the view and the model.

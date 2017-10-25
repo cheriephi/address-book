@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace ConsoleAddress
+namespace AddressBookClient
 {
     /// <summary>
     /// Wraps the domain address class into data that can easily bind to a view.

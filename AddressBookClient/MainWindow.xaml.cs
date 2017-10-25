@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows;
 
-namespace ConsoleAddress
+namespace AddressBookClient
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
