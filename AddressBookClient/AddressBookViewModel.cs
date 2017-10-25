@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.IO;
 
 namespace ConsoleAddress
 {
@@ -32,11 +33,11 @@ namespace ConsoleAddress
         private void Update(string name, string street, string city, string state, string zip, string country)
         {
             // Remove if exists
-            AddressBook.Remove(name);
+            addressBook.Remove(name);
 
             // Add
             var address = new Address(street, city, state, zip, country);
-            AddressBook.Add(name, address);
+            addressBook.Add(name, address);
         }
 
         public ObservableCollection<AddressViewModel> Addresses
@@ -48,22 +49,40 @@ namespace ConsoleAddress
             }
         }
 
-        public AddressBook AddressBook // TODO: Shouldn't name it like its type
+        #region Persistence
+        /// <summary>
+        /// Loads the address book data from the input stream.
+        /// </summary>
+        /// <param name="input"></param>
+        public void Load(Stream input)
         {
-            get => addressBook;
-            set
-            {
-                addressBook = value;
+            //TODO: This is not properly refreshing the data
 
-                // Refresh the addresses in this class
-                var addressBookItems = addressBook.GetAll();
-                addresses.Clear();
-                foreach (var address in addressBookItems)
-                {
-                    var addressViewModel = new AddressViewModel(address.Key, address.Value.getSpec("street"), address.Value.getSpec("city"), address.Value.getSpec("state"), address.Value.getSpec("zip"), address.Value.getSpec("country"));
-                    addresses.Add(addressViewModel);
-                }
+            var controller = new Controller();
+
+            addressBook = controller.Load(input);
+
+            // Refresh the addresses in this class
+            var addressBookItems = addressBook.GetAll();
+            addresses.Clear();
+            foreach (var address in addressBookItems)
+            {
+                var addressViewModel = new AddressViewModel(address.Key, address.Value.getSpec("street"), address.Value.getSpec("city"), address.Value.getSpec("state"), address.Value.getSpec("zip"), address.Value.getSpec("country"));
+                addresses.Add(addressViewModel);
             }
+
         }
+
+        /// <summary>
+        /// Saves the address book data to the output stream.
+        /// </summary>
+        /// <param name="output"></param>
+        public void Save(Stream output)
+        {
+            var controller = new Controller();
+            //TODO: addressBook is not in sync with the data
+            controller.Save(output, addressBook);
+        }
+        #endregion
     }
 }

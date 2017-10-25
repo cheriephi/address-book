@@ -25,15 +25,9 @@ namespace ConsoleAddress
             var dialog = new OpenFileDialog();
             if (dialog.ShowDialog() == true)
             {
-                var fileName = dialog.FileName;
-                using (var input = File.OpenRead(fileName))
+                using (var input = File.OpenRead(dialog.FileName))
                 {
-                    var controller = new Controller();
-                    var addressBook = controller.Load(input);
-
-                    //TODO: This is not properly refreshing the data
-                    addressBookViewModel.AddressBook = addressBook;
-                    this.DataContext = addressBookViewModel;
+                    addressBookViewModel.Load(input);
                 }
             }
         }
@@ -43,12 +37,9 @@ namespace ConsoleAddress
             var dialog = new SaveFileDialog();
             if (dialog.ShowDialog() == true)
             {
-                var fileName = dialog.FileName;
-
-                using (var output = File.Create(fileName))
+                using (var output = File.Create(dialog.FileName))
                 {
-                    var controller = new Controller();
-                    controller.Save(output, addressBookViewModel.AddressBook);
+                    addressBookViewModel.Save(output);
                 }
             }
         }
