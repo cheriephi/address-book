@@ -19,11 +19,12 @@
                 Name="gridAddresses"
                 HorizontalAlignment="Left" 
                 VerticalAlignment="Top"
-                Loaded="DataGrid_Loaded"
                 AutoGenerateColumns="False"
                 CanUserAddRows="True"
                 CanUserDeleteRows="False"
-                AlternatingRowBackground="LightGray">
+                AlternatingRowBackground="LightGray"
+                ItemsSource="{Binding Addresses}"
+                >
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
                     <DataGridTextColumn Header="Street" Binding="{Binding Street}"/>
