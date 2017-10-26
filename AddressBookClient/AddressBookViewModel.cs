@@ -16,7 +16,8 @@ namespace AddressBookClient
             this.addresses = new ObservableCollection<AddressViewModel>
             {
                 new AddressViewModel("Joe Bloggs", "1 New St.", "Birmingham", "England", "B01 3TN", "UK"),
-                new AddressViewModel("Michelle Obama", "1600 Pennsylvania Ave", "Washington", "DC", "20500", "USA")
+                new AddressViewModel("John Doe", "16 S 31st St.", "Boulder", "CO", "80304", "USA"),
+                new AddressViewModel("Brent Leroy", "Corner Gas", "Dog River", "SK", "S0G 4H0", "CANADA")
             };
         }
 

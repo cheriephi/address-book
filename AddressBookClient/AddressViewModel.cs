@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AddressBookClient
+﻿namespace AddressBookClient
 {
     /// <summary>
     /// Wraps the domain address class into data that can easily bind to a view.
@@ -18,10 +16,7 @@ namespace AddressBookClient
         /// <summary>
         /// Default constructor.
         /// </summary>
-        /// <remarks>Datagrid Add binding requires a default constructor.
-        /// The guid is a workaround to make sure we stay unique. There may be a more elegant solution.
-        /// </remarks>
-        public AddressViewModel() : this(Guid.NewGuid().ToString("N"), "", "", "", "", "") {}
+        public AddressViewModel() : this("", "", "", "", "", "") {}
 
         public AddressViewModel(string name, string street, string city, string state, string zip, string country)
         {
