@@ -1,7 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ConsoleAddress;
-using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace ConsoleAddressTest
 {
@@ -32,8 +30,8 @@ namespace ConsoleAddressTest
 
             var addressBuilders = addressBookBuilder.GetAddressBuilders();
 
-            var addressBuilder = new AddressBuilder();
             var name = "New address name";
+            var addressBuilder = new AddressBuilder().SetName(name);
             addressBuilders.Add(name, addressBuilder);
             addressBook.Add(name, addressBuilder.Build());
 

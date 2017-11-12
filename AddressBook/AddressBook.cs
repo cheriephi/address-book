@@ -46,8 +46,14 @@ namespace ConsoleAddress
         /// <param name="name"></param>
         /// <param name="addressKey"></param>
         /// <param name="addressValue"></param>
+        /// <exception cref="ArgumentOutOfRangeException"/>
         public void Update(string name, string addressKey, string addressValue)
         {
+            if (!Enum.IsDefined(typeof(AddressKey), addressKey))
+            {
+                throw new ArgumentOutOfRangeException($"{addressKey} is not a valid AddressKey");
+            }
+
             if (addressKey == "name")
             {
                 if (addresses.ContainsKey(name))
@@ -64,8 +70,11 @@ namespace ConsoleAddress
             }
                 
             else
-            { 
-                addresses[name].setSpec(addressKey, addressValue);
+            {
+                // Update the relevant Address property using reflection
+                var capitalizedAddressKey = char.ToUpper(addressKey[0]) + addressKey.Substring(1);
+                var property = typeof(Address).GetProperty(capitalizedAddressKey);
+                property.SetValue(addresses[name], addressValue);
             }
         }
 

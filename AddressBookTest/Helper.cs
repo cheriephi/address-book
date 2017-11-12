@@ -11,11 +11,12 @@ namespace ConsoleAddressTest
     {
         internal static void AssertAreEqual(AddressBuilder expected, Address actual, string message)
         {
-            Assert.AreEqual(expected.GetStreet(), actual.getSpec("street"), $"Street {message}");
-            Assert.AreEqual(expected.GetCity(), actual.getSpec("city"), $"City {message}");
-            Assert.AreEqual(expected.GetState(), actual.getSpec("state"), $"State {message}");
-            Assert.AreEqual(expected.GetZip(), actual.getSpec("zip"), $"Zip {message}");
-            Assert.AreEqual(expected.GetCountry(), actual.getSpec("country"), $"Country {message}");
+            Assert.AreEqual(expected.GetName(), actual.Name, $"Name {message}");
+            Assert.AreEqual(expected.GetStreet(), actual.Street, $"Street {message}");
+            Assert.AreEqual(expected.GetCity(), actual.City, $"City {message}");
+            Assert.AreEqual(expected.GetState(), actual.State, $"State {message}");
+            Assert.AreEqual(expected.GetZip(), actual.Zip, $"Zip {message}");
+            Assert.AreEqual(expected.GetCountry(), actual.Country, $"Country {message}");
         }
 
         internal static void AssertAreEqual(AddressBuilder expected, Address actual)

@@ -10,62 +10,45 @@ namespace ConsoleAddress
     [Serializable]
     public class Address
     {
-        Dictionary<string, string> address;
+        private string name;
+        private string street;
+        private string city;
+        private string state;
+        private string zip;
+        private string country;
 
         #region Constructors
         /// <summary>
         /// Creates an empty address.
         /// </summary>
-        public Address() : this("", "", "", "", "") {}
+        public Address() : this("", "", "", "", "", "") {}
 
         /// <summary>
         /// Creates an address from the data passed in.
         /// </summary>
+        /// <param name="name"></param>
         /// <param name="street"></param>
         /// <param name="city"></param>
         /// <param name="state"></param>
         /// <param name="zip"></param>
         /// <param name="country"></param>
-        public Address(string street, string city, string state, string zip, string country)
+        public Address(string name, string street, string city, string state, string zip, string country)
         {
-            address = new Dictionary<string, string>();
-
-            address.Add("street", street);
-            address.Add("city", city);
-            address.Add("state", state);
-            address.Add("zip", zip);
-            address.Add("country", country);
+            this.name = name;
+            this.street = street;
+            this.city = city;
+            this.state = state;
+            this.zip = zip;
+            this.country = country;
         }
         #endregion
 
-        /// <summary>
-        /// Returns corresponding address value for the key passed in.
-        /// </summary>
-        /// <param name="addressKey"></param>
-        /// <returns></returns>
-        /// <see cref="AddressKey">The name key is not relevant.</see>
-        public string getSpec(string addressKey)
-        {
-            return address[addressKey];
-        }
-
-        /// <summary>
-        /// Updates corresponding address value for the key passed in.
-        /// </summary>
-        /// <param name="addressKey"></param>
-        /// <param name="addressValue"></param>
-        /// <see cref="AddressKey">The name key is not relevant.</see>
-        /// <exception cref="ArgumentOutOfRangeException">If addressKey is not a Address.AddressKey.</exception>
-        public void setSpec(string addressKey, string addressValue)
-        {
-            // Throw an error if an invalid address key is passed in
-            if (!Enum.IsDefined(typeof(AddressKey), addressKey) || addressKey == "name")
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-            address[addressKey] = addressValue;
-        }
+        public string Name { get => name; set => name = value; }
+        public string Street { get => street; set => street = value; }
+        public string City { get => city; set => city = value; }
+        public string State { get => state; set => state = value; }
+        public string Zip { get => zip; set => zip = value; }
+        public string Country { get => country; set => country = value; }
 
         /// <summary>
         /// Returns a concatenated string of the address fields.
@@ -73,7 +56,8 @@ namespace ConsoleAddress
         /// <returns></returns>
         public override string ToString()
         {
-            return String.Join(", ", address.Select(x => x.Value).ToArray());
+            var addressFields = new string[] { name, street, city, state, zip, country };
+            return String.Join(", ", addressFields);
         }
 
         /// <summary>
@@ -87,12 +71,12 @@ namespace ConsoleAddress
         {
             var delimiter = new string[] { ", " };
             var fields = addressFields.Split(delimiter, StringSplitOptions.None);
-            if (fields.Length != 5)
+            if (fields.Length != 6)
             {
                 result = null;
                 return false;
             }
-            result = new Address(fields[0], fields[1], fields[2], fields[3], fields[4]);
+            result = new Address(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
 
             return true;
         }
