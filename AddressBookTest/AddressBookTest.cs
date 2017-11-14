@@ -33,7 +33,7 @@ namespace ConsoleAddressTest
             var name = "New address name";
             var addressBuilder = new AddressBuilder().SetName(name);
             addressBuilders.Add(name, addressBuilder);
-            addressBook.Add(name, addressBuilder.Build());
+            addressBook.Add(addressBuilder.Build());
 
             Helper.AssertAreEqual(addressBookBuilder, addressBook, "After");
         }
@@ -50,11 +50,11 @@ namespace ConsoleAddressTest
             var addressBuilder = new AddressBuilder();
             var name = "New address name";
             addressBuilders.Add(name, addressBuilder);
-            addressBook.Add(name, addressBuilder.Build());
+            addressBook.Add(addressBuilder.Build());
 
             Helper.AssertAreEqual(addressBookBuilder, addressBook, "Before");
 
-            addressBook.Add(name, addressBuilder.Build());
+            addressBook.Add(addressBuilder.Build());
 
             Helper.AssertAreEqual(addressBookBuilder, addressBook, "After");
         }
@@ -75,19 +75,9 @@ namespace ConsoleAddressTest
             var addressBuilder = new AddressBuilder();
             var name = "New address name";
             addressBuilders.Add(name, addressBuilder);
-            addressBook.Add(name, null);
+            addressBook.Add(null);
 
             Helper.AssertAreEqual(addressBookBuilder, addressBook, "After");
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void AddNullNameAddressTest()
-        {
-            var addressBook = new AddressBookBuilder().Build();
-
-            var address = new AddressBuilder().Build();
-            addressBook.Add(null, address);
         }
         #endregion
 
@@ -155,7 +145,7 @@ namespace ConsoleAddressTest
             var addressBuilder = new AddressBuilder();
             var name = "Sally";
             addressBuilders.Add(name, addressBuilder);
-            addressBook.Add(name, addressBuilder.Build());
+            addressBook.Add(addressBuilder.Build());
 
             Helper.AssertAreEqual(addressBookBuilder, addressBook, "Before");
 

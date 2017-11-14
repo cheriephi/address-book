@@ -1,6 +1,10 @@
 @Rem manual system tests
 @SET AddressBook=..\AddressBook\bin\Debug\AddressBook.exe
 
+%AddressBook% find zip "0G"
+
+%AddressBook% sort city
+
 CALL :Add
 CALL :Update
 CALL :Remove
@@ -13,10 +17,7 @@ GOTO :EOF
 @REM ==============================================================================
 :Add
 @REM ==============================================================================
-%AddressBook% add "Joe Bloggs" "1 New St., Birmingham, England, B01 3TN, UK"
-%AddressBook% add "John Doe" "16 S 31st St., Boulder, CO, 80304, USA"
-%AddressBook% add "Brent Leroy" "Corner Gas, Dog River, SK, S0G 4H0, CANADA"
-%AddressBook% add "Michelle Obama" "1600 Pennsylvania Ave, Washington, DC, 20500, USA"
+%AddressBook% add "Michelle Obama, 1600 Pennsylvania Ave, Washington, DC, 20500, USA"
 
 %AddressBook% print
 @PAUSE

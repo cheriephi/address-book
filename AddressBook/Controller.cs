@@ -27,16 +27,16 @@ namespace ConsoleAddress
                 "Usage: AddressBook [command]",
                 "Where command is one of:",
                 "    find [field] [value]                - find the addresses.",
-                "    add [name] [address]                - add to the addresses.",
+                "    add [address]                       - add to the addresses.",
                 "    update [name] [field] [new value]   - update the address.",
                 "    remove [name]                       - remove from the addresses.",
                 "    sort [field]                        - sort the addresses.",
                 "    print [output file]?                - print the addresses",
                 "",
                 "Where address is a comma and space delimited string:",
-                "         [street] [city] [state] [zip] [country]",
+                "         [name] [street] [city] [state] [zip] [country]",
                 "    example:",
-                "         1600 Pennsylvania Ave, Washington, DC, 20500, USA",
+                "         Michelle Obama, 1600 Pennsylvania Ave, Washington, DC, 20500, USA",
                 "",
                 "Where field is [name | street | city | state | zip | country]",
                 "",
@@ -84,16 +84,15 @@ namespace ConsoleAddress
 
                 success = true;
             }
-            if (args.Length == 3 && command == "add")
+            if (args.Length == 2 && command == "add")
             {
                 // Add the address
-                var name = args[1];
-                var isValidAddress = Address.TryParse(args[2], out Address address);
+                var isValidAddress = Address.TryParse(args[1], out Address address);
                 if (!isValidAddress)
                 {
                     goto InvalidArgs;
                 }
-                addressBook.Add(name, address);
+                addressBook.Add(address);
                 addressBook.Save();
 
                 success = true;

@@ -45,9 +45,8 @@ namespace ConsoleAddress
         /// <summary>
         /// Adds the input address to the address book.
         /// </summary>
-        /// <param name="name"></param>
         /// <param name="addressToAdd"></param>
-        public void Add(string name, Address addressToAdd)
+        public void Add(Address addressToAdd)
         {
             if (addressToAdd == null) { addressToAdd = new Address(); }
 
@@ -96,6 +95,7 @@ namespace ConsoleAddress
         public void Remove(string name)
         {
             var addressToDelete = (from address in addressBookContext.Addresses
+                                   where address.Name == name
                                    select address).First();
 
             addressBookContext.Addresses.DeleteOnSubmit(addressToDelete);

@@ -41,7 +41,7 @@ namespace ConsoleAddressTest
             {
                 if (!defaultAddressBuilders.ContainsKey(builder.Key))
                 {
-                    book.Add(builder.Key, builder.Value.Build());
+                    book.Add(builder.Value.Build());
                 }
             }
 
