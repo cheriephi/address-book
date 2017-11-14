@@ -152,11 +152,7 @@ namespace ConsoleAddress
         /// </remarks>
         internal void Print(StreamWriter writer, Dictionary<string, Address> addresses)
         {
-            // Build a string of dictionary items: the key and the associated value.
-            // Use a Func (an inline delegate) to make the code more readable and easier to debug.
-            Func<KeyValuePair<string, Address>, string> itemToString = pair => pair.Key + ", " + pair.Value;
-
-            var itemList = string.Join(Environment.NewLine, addresses.Select(itemToString).ToArray());
+            var itemList = string.Join(Environment.NewLine, addresses.Select(pair => pair.Value.ToString()).ToArray());
 
             writer.WriteLine(itemList);
             writer.Flush();
@@ -210,7 +206,7 @@ namespace ConsoleAddress
         {
             // Build a string of dictionary items: the key and the associated value.
             // Use a Func (an inline delegate) to make the code more readable and easier to debug.
-            Func<KeyValuePair<string, Address>, string> itemToString = pair => "\"" + pair.Key + "\",\"" + pair.Value + "\"";
+            Func<KeyValuePair<string, Address>, string> itemToString = pair => "\"" + pair.Value + "\"";
 
             var itemList = string.Join(Environment.NewLine, addresses.Select(itemToString).ToArray());
 
@@ -234,7 +230,6 @@ namespace ConsoleAddress
                     new XElement
                     (
                         "contact",
-                        new XAttribute("name", pair.Key),
                         new XAttribute("address", pair.Value)
                     )
                 ))
