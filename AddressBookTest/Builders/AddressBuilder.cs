@@ -4,11 +4,23 @@ namespace ConsoleAddressTest
 {
     internal class AddressBuilder
     {
-        string street = "";
-        string city = "";
-        string state = "";
-        string zip = "";
-        string country = "";
+        private string name = "";
+        private string street = "";
+        private string city = "";
+        private string state = "";
+        private string zip = "";
+        private string country = "";
+
+        internal string GetName()
+        {
+            return name;
+        }
+
+        internal AddressBuilder SetName(string name)
+        {
+            this.name = name;
+            return this;
+        }
 
         internal string GetStreet()
         {
@@ -67,13 +79,13 @@ namespace ConsoleAddressTest
 
         internal Address Build()
         {
-            var address = new Address(street, city, state, zip, country);
+            var address = new Address(name, street, city, state, zip, country);
             return address;
         }
 
         public override string ToString()
         {
-            var address = $"{street}, {city}, {state}, {zip}, {country}";
+            var address = $"{name}, {street}, {city}, {state}, {zip}, {country}";
             return address;
         }
     }

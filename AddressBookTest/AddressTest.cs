@@ -42,8 +42,9 @@ namespace ConsoleAddressTest
 
             Helper.AssertAreEqual(builder, address, "Before");
 
-            builder.SetStreet("After");
-            address.setSpec("street", "After");
+            var street = "123 Main";
+            builder.SetStreet(street);
+            address.Street = street;
 
             Helper.AssertAreEqual(builder, address, "After");
         }
@@ -56,8 +57,9 @@ namespace ConsoleAddressTest
 
             Helper.AssertAreEqual(builder, address, "Before");
 
-            builder.SetCity("After");
-            address.setSpec("city", "After");
+            var city = "Post Falls";
+            builder.SetCity(city);
+            address.City = city;
 
             Helper.AssertAreEqual(builder, address, "After");
         }
@@ -70,8 +72,9 @@ namespace ConsoleAddressTest
 
             Helper.AssertAreEqual(builder, address, "Before");
 
-            builder.SetState("After");
-            address.setSpec("state", "After");
+            var state = "WA";
+            builder.SetState(state);
+            address.State = state;
 
             Helper.AssertAreEqual(builder, address, "After");
         }
@@ -84,8 +87,9 @@ namespace ConsoleAddressTest
 
             Helper.AssertAreEqual(builder, address, "Before");
 
-            builder.SetZip("After");
-            address.setSpec("zip", "After");
+            var zip = "12345";
+            builder.SetZip(zip);
+            address.Zip = zip;
 
             Helper.AssertAreEqual(builder, address, "After");
         }
@@ -98,26 +102,18 @@ namespace ConsoleAddressTest
 
             Helper.AssertAreEqual(builder, address, "Before");
 
-            builder.SetCountry("After");
-            address.setSpec("country", "After");
+            var country = "Mexico";
+            builder.SetCountry(country);
+            address.Country = country;
 
             Helper.AssertAreEqual(builder, address, "After");
         }
         #endregion
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void SetInvalidAddressTypeTest()
-        {
-            var builder = new AddressBuilder();
-            var address = builder.Build();
-            address.setSpec("foo", "bar");
-        }
-
-        [TestMethod]
         public void ToStringTest()
         {
-            var builder = new AddressBuilder().SetStreet("Five State Street").SetCity("Seattle").SetState("WA").SetZip("98117").SetCountry("USA");
+            var builder = new AddressBuilder().SetName("Joe Schmoe").SetStreet("Five State Street").SetCity("Seattle").SetState("WA").SetZip("98117").SetCountry("USA");
             var address = builder.Build();
 
             Assert.AreEqual(builder.ToString(), address.ToString());
