@@ -1,22 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
 
 namespace ConsoleAddress
 {
     /// <summary>
     /// Manages all contact addresses in the address book.
     /// </summary>
+    /// <remarks>Interacts with persistent storage.
+    /// Code has no special handling if the user requests an operation that doesn't make sense 
+    /// (for example, inserting a record where it already exists).
+    /// </remarks>
     [Serializable]
     public class AddressBook
     {
-        private Dictionary<string, Address> addresses;
+        private AddressBookContext addressBookContext;
 
         /// <summary>
         /// Creates the empty address book.
         /// </summary>
         public AddressBook()
         {
-            addresses = new Dictionary<string, Address>() {};
+            var connection = ConfigurationManager.ConnectionStrings["AddressBookDataSource"].ConnectionString;
+            addressBookContext = new AddressBookContext(connection);
         }
 
         /// <summary>
@@ -25,7 +32,8 @@ namespace ConsoleAddress
         /// <returns></returns>
         public Dictionary<string, Address> GetAll()
         {
-            return new Dictionary<string, Address>(addresses);
+            var addresses = addressBookContext.Addresses.ToDictionary(address => address.Name);
+            return addresses;
         }
 
         /// <summary>
@@ -37,7 +45,7 @@ namespace ConsoleAddress
         {
             if (addressToAdd == null) { addressToAdd = new Address(); }
 
-            addresses.Add(name, addressToAdd);
+            addressBookContext.Addresses.InsertOnSubmit(addressToAdd);
         }
 
         /// <summary>
@@ -54,28 +62,15 @@ namespace ConsoleAddress
                 throw new ArgumentOutOfRangeException($"{addressKey} is not a valid AddressKey");
             }
 
-            if (addressKey == "name")
-            {
-                if (addresses.ContainsKey(name))
-                {
-                    var address = addresses[name];
-
-                    Remove(name);
-                    Add(addressValue, address);
-                }
-                else
-                {
-                    Add(addressValue, new Address());
-                }
-            }
+            var addressToUpdate = (from address in addressBookContext.Addresses
+                                  where address.Name == name
+                                  select address).First();
                 
-            else
-            {
-                // Update the relevant Address property using reflection
-                var capitalizedAddressKey = char.ToUpper(addressKey[0]) + addressKey.Substring(1);
-                var property = typeof(Address).GetProperty(capitalizedAddressKey);
-                property.SetValue(addresses[name], addressValue);
-            }
+            // Update the relevant Address property using reflection
+            var capitalizedAddressKey = char.ToUpper(addressKey[0]) + addressKey.Substring(1);
+            var property = typeof(Address).GetProperty(capitalizedAddressKey);
+
+            property.SetValue(addressToUpdate, addressValue);
         }
 
         /// <summary>
@@ -84,7 +79,10 @@ namespace ConsoleAddress
         /// <param name="name"></param>
         public void Remove(string name)
         {
-            addresses.Remove(name);
+            var addressToDelete = (from address in addressBookContext.Addresses
+                                   select address).First();
+
+            addressBookContext.Addresses.DeleteOnSubmit(addressToDelete);
         }
     }
 }

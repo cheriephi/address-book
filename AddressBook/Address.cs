@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Data.Linq.Mapping;
 
 namespace ConsoleAddress
 {
@@ -8,8 +7,10 @@ namespace ConsoleAddress
     /// Manages contact addresses.
     /// </summary>
     [Serializable]
+    [Table(Name = "Address")]
     public class Address
     {
+        private int addressKey;
         private string name;
         private string street;
         private string city;
@@ -43,12 +44,28 @@ namespace ConsoleAddress
         }
         #endregion
 
+        #region Accessors
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, Storage = "addressKey")]
+        public int AddressKey { get => addressKey; }
+
+        [Column(Name = "FullName", Storage = "name")]
         public string Name { get => name; set => name = value; }
+
+        [Column(Storage = "street")]
         public string Street { get => street; set => street = value; }
+
+        [Column(Storage = "city")]
         public string City { get => city; set => city = value; }
+
+        [Column(Name = "StateCode", Storage = "state")]
         public string State { get => state; set => state = value; }
+
+        [Column(Storage = "zip")]
         public string Zip { get => zip; set => zip = value; }
+
+        [Column(Storage = "country")]
         public string Country { get => country; set => country = value; }
+        #endregion
 
         /// <summary>
         /// Returns a concatenated string of the address fields.
