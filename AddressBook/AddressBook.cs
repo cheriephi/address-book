@@ -12,7 +12,6 @@ namespace ConsoleAddress
     /// Code has no special handling if the user requests an operation that doesn't make sense 
     /// (for example, inserting a record where it already exists).
     /// </remarks>
-    [Serializable]
     public class AddressBook
     {
         private AddressBookContext addressBookContext;
@@ -83,6 +82,11 @@ namespace ConsoleAddress
                                    select address).First();
 
             addressBookContext.Addresses.DeleteOnSubmit(addressToDelete);
+        }
+
+        public void Save()
+        {
+            addressBookContext.SubmitChanges();
         }
     }
 }

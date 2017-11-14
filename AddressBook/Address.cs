@@ -6,7 +6,6 @@ namespace ConsoleAddress
     /// <summary>
     /// Manages contact addresses.
     /// </summary>
-    [Serializable]
     [Table(Name = "Address")]
     public class Address
     {

@@ -26,10 +26,10 @@ namespace ConsoleAddress
             {
                 "Usage: AddressBook [command]",
                 "Where command is one of:",
-                "    add [address file] [name] [address]                - add to the addresses.",
-                "    update [address file] [name] [field] [new value]   - update the address.",
-                "    remove [address file] [name]                       - remove from the addresses.",
-                "    print [address file] [output file]?                - print the addresses",
+                "    add [name] [address]                - add to the addresses.",
+                "    update [name] [field] [new value]   - update the address.",
+                "    remove [name]                       - remove from the addresses.",
+                "    print [output file]?                - print the addresses",
                 "",
                 "Where address is a comma and space delimited string:",
                 "         [street] [city] [state] [zip] [country]",
@@ -38,7 +38,6 @@ namespace ConsoleAddress
                 "Where field is [name | street | city | state | zip | country]",
                 "",
                 "Where file is a fully qualified file name",
-                "   the address file is the persistent storage",
                 "",
                 "Where print prints to a console window (when output file is not specified)",
                 "   or a .csv or .xml output file",
@@ -51,18 +50,6 @@ namespace ConsoleAddress
             writer.Flush();
         }
 
-        private bool IsAddressFileValid(string addressFileName)
-        {
-            if (File.Exists(addressFileName)) { return true; }
-
-            // Check we can create the file if it doesn't exist
-            var path = Path.GetDirectoryName(addressFileName);
-
-            // Path will be empty if the file does not contain directory information.
-            // Exists only returns true if the process has permissions to read from it.
-            return (string.IsNullOrEmpty(path) || Directory.Exists(path));
-        }
-
         /// <summary>
         /// Performs address book functionality.
         /// </summary>
@@ -73,106 +60,50 @@ namespace ConsoleAddress
         {
             var success = false;
 
-            if (args.Length < 2) { goto InvalidArgs; }
+            if (args.Length < 1) { goto InvalidArgs; }
             var command = args[0];
-            var addressFileName = args[1];
-
-            var isAddressFileValid = IsAddressFileValid(addressFileName);
-            if (!isAddressFileValid) { goto InvalidArgs; }
 
             var addressBook = new AddressBook();
 
 
-            if (args.Length == 4 && command == "add")
+            if (args.Length == 3 && command == "add")
             {
-                // Load the address file if it exists
-                if (File.Exists(addressFileName))
-                {
-                    using (var input = File.OpenRead(addressFileName))
-                    {
-                        addressBook = Load(input);
-                    }
-                }
-
-
                 // Add the address
-                var name = args[2];
-                var isValidAddress = Address.TryParse(args[3], out Address address);
+                var name = args[1];
+                var isValidAddress = Address.TryParse(args[2], out Address address);
                 if (!isValidAddress)
                 {
                     goto InvalidArgs;
                 }
                 addressBook.Add(name, address);
-
-
-                // Save
-                using (var output = File.Create(addressFileName))
-                {
-                    Save(output, addressBook);
-                }
+                addressBook.Save();
 
                 success = true;
             }
-            else if (args.Length == 5 && command == "update" && Enum.IsDefined(typeof(AddressKey), args[3]))
+            else if (args.Length == 4 && command == "update" && Enum.IsDefined(typeof(AddressKey), args[2]))
             {
-                // Load the address file if it exists
-                if (!File.Exists(addressFileName)) { goto InvalidArgs; }
-                using (var input = File.OpenRead(addressFileName))
-                {
-                    addressBook = Load(input);
-                }
-                
-
                 // Update the address
-                var name = args[2];
-                var addressKey = args[3];
-                var addressValue = args[4];
+                var name = args[1];
+                var addressKey = args[2];
+                var addressValue = args[3];
 
                 addressBook.Update(name, addressKey, addressValue);
-
-
-                // Save
-                using (var output = File.Create(addressFileName))
-                {
-                    Save(output, addressBook);
-                }
+                addressBook.Save();
 
                 success = true;
             }
-            else if (args.Length == 3 && command == "remove")
+            else if (args.Length == 2 && command == "remove")
             {
-                // Load the address file if it exists
-                if (!File.Exists(addressFileName)) { goto InvalidArgs; }
-                using (var input = File.OpenRead(addressFileName))
-                {
-                    addressBook = Load(input);
-                }
-
-
                 // Remove the address
-                var name = args[2];
+                var name = args[1];
                 addressBook.Remove(name);
-
-
-                // Save
-                using (var output = File.Create(addressFileName))
-                {
-                    Save(output, addressBook);
-                }
+                addressBook.Save();
 
                 success = true;
             }
-            else if (args.Length == 2 && command == "print")
+            else if (args.Length == 1 && command == "print")
             {
-                // Load the address file if it exists
-                if (!File.Exists(addressFileName)) { goto InvalidArgs; }
-
-                using (var input = File.OpenRead(addressFileName))
-                {
-                    addressBook = Load(input);
-                }
                 var addresses = addressBook.GetAll();
-
 
                 // Print
                 using (var writer = new StreamWriter(Console.OpenStandardOutput()))
@@ -181,19 +112,12 @@ namespace ConsoleAddress
                 }
                 success = true;
             }
-            else if (args.Length == 3 && command == "print")
+            else if (args.Length == 2 && command == "print")
             {
-                // Load the address file if it exists
-                if (!File.Exists(addressFileName)) { goto InvalidArgs; }
-
-                using (var input = File.OpenRead(addressFileName))
-                {
-                    addressBook = Load(input);
-                }
                 var addresses = addressBook.GetAll();
 
                 // Print
-                var outputFileName = args[2];
+                var outputFileName = args[1];
                 if (GetFileText(outputFileName, addresses, out string text))
                 {
                     using (var writer = new StreamWriter(File.OpenWrite(outputFileName)))
@@ -242,31 +166,6 @@ namespace ConsoleAddress
         {
             writer.WriteLine(text);
             writer.Flush();
-        }
-        #endregion
-
-        #region Serialization
-        /// <summary>
-        /// Saves (serializes) the input address book to the output stream.
-        /// </summary>
-        /// <param name="output"></param>
-        /// <param name="addressBook"></param>
-        internal void Save(Stream output, AddressBook addressBook)
-        {
-            var formatter = new BinaryFormatter();
-            formatter.Serialize(output, addressBook);
-        }
-
-        /// <summary>
-        /// Returns an address book serialized from the input stream.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        internal AddressBook Load(Stream input)
-        {
-            var formatter = new BinaryFormatter();
-            var addressBook = (AddressBook)formatter.Deserialize(input);
-            return addressBook;
         }
         #endregion
 
