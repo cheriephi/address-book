@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Reflection;
 
 namespace ConsoleAddress
 {
@@ -15,6 +16,7 @@ namespace ConsoleAddress
     public class AddressBook
     {
         private AddressBookContext addressBookContext;
+        private PropertyInfo sortProperty;
 
         /// <summary>
         /// Creates the empty address book.
@@ -23,6 +25,8 @@ namespace ConsoleAddress
         {
             var connection = ConfigurationManager.ConnectionStrings["AddressBookDataSource"].ConnectionString;
             addressBookContext = new AddressBookContext(connection);
+
+            sortProperty = GetAddressProperty("name"); // Default sorting by the Address.Name.
         }
 
         /// <summary>
@@ -31,8 +35,11 @@ namespace ConsoleAddress
         /// <returns></returns>
         public Dictionary<string, Address> GetAll()
         {
-            var addresses = addressBookContext.Addresses.ToDictionary(address => address.Name);
-            return addresses;
+            var orderedAddresses = (from addess in addressBookContext.Addresses.AsEnumerable<Address>()
+                                    orderby sortProperty.GetValue(addess, null)
+                                    select addess).ToDictionary(address => address.Name);
+
+            return orderedAddresses;
         }
 
         /// <summary>
@@ -62,14 +69,24 @@ namespace ConsoleAddress
             }
 
             var addressToUpdate = (from address in addressBookContext.Addresses
-                                  where address.Name == name
-                                  select address).First();
-                
+                                   where address.Name == name
+                                   select address).First();
+
+            var addressProperty = GetAddressProperty(addressKey);
+            addressProperty.SetValue(addressToUpdate, addressValue);
+        }
+
+        /// <summary>
+        /// Returns the associated Address.Property for the input addressKey.
+        /// </summary>
+        /// <param name="addressKey"></param>
+        /// <returns></returns>
+        private PropertyInfo GetAddressProperty(string addressKey)
+        {
             // Update the relevant Address property using reflection
             var capitalizedAddressKey = char.ToUpper(addressKey[0]) + addressKey.Substring(1);
             var property = typeof(Address).GetProperty(capitalizedAddressKey);
-
-            property.SetValue(addressToUpdate, addressValue);
+            return property;
         }
 
         /// <summary>
@@ -84,9 +101,36 @@ namespace ConsoleAddress
             addressBookContext.Addresses.DeleteOnSubmit(addressToDelete);
         }
 
+        /// <summary>
+        /// Saves the address book to persistent storage.
+        /// </summary>
         public void Save()
         {
             addressBookContext.SubmitChanges();
+        }
+
+        /// <summary>
+        /// Returns matching address book entries based on the key to search.
+        /// </summary>
+        /// <param name="addressKey"></param>
+        /// <param name="addressValue"></param>
+        /// <returns></returns>
+        public Dictionary<string, Address> Find(string addressKey, string addressValue)
+        {
+            var addressProperty = GetAddressProperty(addressKey);
+            var matchingAddresses = addressBookContext.Addresses.AsEnumerable<Address>().Where(address => addressProperty.GetValue(address, null).ToString().Contains(addressValue));
+
+            // Return a dictionary.
+            return matchingAddresses.ToDictionary(address => address.Name);
+        }
+
+        /// <summary>
+        /// Sorts the address book by the input key.
+        /// </summary>
+        /// <param name="addressKey"></param>
+        public void Sort(string addressKey)
+        {
+            sortProperty = GetAddressProperty(addressKey);
         }
     }
 }

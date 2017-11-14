@@ -26,15 +26,18 @@ namespace ConsoleAddress
             {
                 "Usage: AddressBook [command]",
                 "Where command is one of:",
+                "    find [field] [value]                - find the addresses.",
                 "    add [name] [address]                - add to the addresses.",
                 "    update [name] [field] [new value]   - update the address.",
                 "    remove [name]                       - remove from the addresses.",
+                "    sort [field]                        - sort the addresses.",
                 "    print [output file]?                - print the addresses",
                 "",
                 "Where address is a comma and space delimited string:",
                 "         [street] [city] [state] [zip] [country]",
                 "    example:",
                 "         1600 Pennsylvania Ave, Washington, DC, 20500, USA",
+                "",
                 "Where field is [name | street | city | state | zip | country]",
                 "",
                 "Where file is a fully qualified file name",
@@ -66,6 +69,21 @@ namespace ConsoleAddress
             var addressBook = new AddressBook();
 
 
+            if (args.Length == 3 && args[0] == "find" && Enum.IsDefined(typeof(AddressKey), args[1]))
+            {
+                var addressKey = args[1];
+                var addressValue = args[2];
+
+                var addresses = addressBook.Find(addressKey, addressValue);
+
+                // Print
+                using (var writer = new StreamWriter(Console.OpenStandardOutput()))
+                {
+                    Print(writer, addresses);
+                }
+
+                success = true;
+            }
             if (args.Length == 3 && command == "add")
             {
                 // Add the address
@@ -98,6 +116,21 @@ namespace ConsoleAddress
                 var name = args[1];
                 addressBook.Remove(name);
                 addressBook.Save();
+
+                success = true;
+            }
+            else if (args.Length == 2 && args[0] == "sort" && Enum.IsDefined(typeof(AddressKey), args[1]))
+            {
+                var addressKey = args[1];
+
+                addressBook.Sort(addressKey);
+                var addresses = addressBook.GetAll();
+
+                // Print
+                using (var writer = new StreamWriter(Console.OpenStandardOutput()))
+                {
+                    Print(writer, addresses);
+                }
 
                 success = true;
             }
