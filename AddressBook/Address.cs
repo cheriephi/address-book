@@ -9,7 +9,6 @@ namespace ConsoleAddress
     [Table(Name = "Address")]
     public class Address
     {
-        private int addressKey;
         private string name;
         private string street;
         private string city;
@@ -44,9 +43,6 @@ namespace ConsoleAddress
         #endregion
 
         #region Accessors
-        [Column(IsPrimaryKey = true, IsDbGenerated = true, Storage = "addressKey")]
-        public int AddressKey { get => addressKey; }
-
         [Column(Name = "FullName", Storage = "name")]
         public string Name { get => name; set => name = value; }
 

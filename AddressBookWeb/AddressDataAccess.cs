@@ -29,7 +29,7 @@ namespace AddressBookWeb
         }
 
         [DataObjectMethod(DataObjectMethodType.Insert, true)]
-        public void Add(Address address)
+        public void Insert(Address address)
         {
             addressBook.Add(address);
         }
