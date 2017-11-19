@@ -37,4 +37,6 @@ using System.Runtime.InteropServices;
 
 // Expose types / methods with internalmodifier to the corresponding unit test project
 // This is a work around to support testing on interfaces that are not designed with testing in mind
-[assembly: InternalsVisibleTo("AddressBookTest")]
+// See https://weblogs.asp.net/bhouse/using-internalsvisibleto-attribute-with-strong-named-assemblies
+// Because this assembly is signed so it can be referenced by the web, the test assembly also has to be signed and referenced by its public key
+[assembly: InternalsVisibleTo("AddressBookTest, PublicKey=0024000004800000940000000602000000240000525341310004000001000100ddfdfb84f40e232f14ed31f4bc5091a65beea19beb0e3cefc5da23468aae347bf107828118c8bdbe530b5ebf1baa5183d5261a7dce8a2660af0b57d00c5221fea9eb0102a597740e1ea615e84c3d34cb89675a737d084219ac5ad0e8d69331fe76bd4939b430d7ba017e901ba99b151db53f14d41e8e924cf01592ab32e244ce")]

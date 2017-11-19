@@ -6,3 +6,5 @@ packages/*
 *.user
 *.dbmdl
 *.jfm
+AddressBookWeb/Web.Debug.config
+AddressBookWeb/Web.Release.config
