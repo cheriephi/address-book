@@ -43,7 +43,7 @@ namespace ConsoleAddress
         #endregion
 
         #region Accessors
-        [Column(Name = "FullName", Storage = "name")]
+        [Column(IsPrimaryKey = true, Name = "FullName", Storage = "name")]
         public string Name { get => name; set => name = value; }
 
         [Column(Storage = "street")]

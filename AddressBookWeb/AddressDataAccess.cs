@@ -20,18 +20,21 @@ namespace AddressBookWeb
         }
 
         [DataObjectMethod(DataObjectMethodType.Select, true)]
-        public IEnumerable<Address> GetAll()
+        public List<Address> GetAll()
         {
             var addresses = from addess in addressBook.GetAll()
-                                    select addess.Value;
+                            select addess.Value;
 
-            return addresses.AsEnumerable<Address>();
+            return addresses.ToList();
         }
 
+        
         [DataObjectMethod(DataObjectMethodType.Insert, true)]
         public void Insert(Address address)
         {
             addressBook.Add(address);
+
+            addressBook.Save();
         }
 
         [DataObjectMethod(DataObjectMethodType.Update, true)]
@@ -39,12 +42,16 @@ namespace AddressBookWeb
         {
             addressBook.Remove(address.Name);
             addressBook.Add(address);
+
+            addressBook.Save();
         }
 
         [DataObjectMethod(DataObjectMethodType.Delete, true)]
         public void Delete(Address address)
         {
             addressBook.Remove(address.Name);
+
+            addressBook.Save();
         }
     }
 }
