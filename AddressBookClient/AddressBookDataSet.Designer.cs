@@ -279,8 +279,6 @@ namespace AddressBookClient {
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
         public partial class AddressDataTable : global::System.Data.TypedTableBase<AddressRow> {
             
-            private global::System.Data.DataColumn columnAddressKey;
-            
             private global::System.Data.DataColumn columnFullName;
             
             private global::System.Data.DataColumn columnStreet;
@@ -324,14 +322,6 @@ namespace AddressBookClient {
             protected AddressDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
                     base(info, context) {
                 this.InitVars();
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn AddressKeyColumn {
-                get {
-                    return this.columnAddressKey;
-                }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -422,7 +412,6 @@ namespace AddressBookClient {
             public AddressRow AddAddressRow(string FullName, string Street, string City, string StateCode, string Zip, string Country) {
                 AddressRow rowAddressRow = ((AddressRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
-                        null,
                         FullName,
                         Street,
                         City,
@@ -432,13 +421,6 @@ namespace AddressBookClient {
                 rowAddressRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowAddressRow);
                 return rowAddressRow;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public AddressRow FindByAddressKey(int AddressKey) {
-                return ((AddressRow)(this.Rows.Find(new object[] {
-                            AddressKey})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -458,7 +440,6 @@ namespace AddressBookClient {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             internal void InitVars() {
-                this.columnAddressKey = base.Columns["AddressKey"];
                 this.columnFullName = base.Columns["FullName"];
                 this.columnStreet = base.Columns["Street"];
                 this.columnCity = base.Columns["City"];
@@ -470,8 +451,6 @@ namespace AddressBookClient {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             private void InitClass() {
-                this.columnAddressKey = new global::System.Data.DataColumn("AddressKey", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnAddressKey);
                 this.columnFullName = new global::System.Data.DataColumn("FullName", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnFullName);
                 this.columnStreet = new global::System.Data.DataColumn("Street", typeof(string), null, global::System.Data.MappingType.Element);
@@ -484,15 +463,10 @@ namespace AddressBookClient {
                 base.Columns.Add(this.columnZip);
                 this.columnCountry = new global::System.Data.DataColumn("Country", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnCountry);
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnAddressKey}, true));
-                this.columnAddressKey.AutoIncrement = true;
-                this.columnAddressKey.AutoIncrementSeed = -1;
-                this.columnAddressKey.AutoIncrementStep = -1;
-                this.columnAddressKey.AllowDBNull = false;
-                this.columnAddressKey.ReadOnly = true;
-                this.columnAddressKey.Unique = true;
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint2", new global::System.Data.DataColumn[] {
+                                this.columnFullName}, false));
                 this.columnFullName.AllowDBNull = false;
+                this.columnFullName.Unique = true;
                 this.columnFullName.MaxLength = 255;
                 this.columnStreet.MaxLength = 255;
                 this.columnCity.MaxLength = 255;
@@ -637,17 +611,6 @@ namespace AddressBookClient {
             internal AddressRow(global::System.Data.DataRowBuilder rb) : 
                     base(rb) {
                 this.tableAddress = ((AddressDataTable)(this.Table));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public int AddressKey {
-                get {
-                    return ((int)(this[this.tableAddress.AddressKeyColumn]));
-                }
-                set {
-                    this[this.tableAddress.AddressKeyColumn] = value;
-                }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -961,7 +924,6 @@ namespace AddressBookClient.AddressBookDataSetTableAdapters {
             global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
             tableMapping.SourceTable = "Table";
             tableMapping.DataSetTable = "Address";
-            tableMapping.ColumnMappings.Add("AddressKey", "AddressKey");
             tableMapping.ColumnMappings.Add("FullName", "FullName");
             tableMapping.ColumnMappings.Add("Street", "Street");
             tableMapping.ColumnMappings.Add("City", "City");
@@ -987,8 +949,8 @@ namespace AddressBookClient.AddressBookDataSetTableAdapters {
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Country", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Country", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = @"INSERT INTO [dbo].[Address] ([FullName], [Street], [City], [StateCode], [Zip], [Country]) VALUES (@FullName, @Street, @City, @StateCode, @Zip, @Country);
-SELECT AddressKey, FullName, Street, City, StateCode, Zip, Country FROM Address WHERE (AddressKey = SCOPE_IDENTITY())";
+            this._adapter.InsertCommand.CommandText = "INSERT INTO [Address] ([FullName], [Street], [City], [StateCode], [Zip], [Country" +
+                "]) VALUES (@FullName, @Street, @City, @StateCode, @Zip, @Country)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@FullName", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FullName", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Street", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Street", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -1035,8 +997,7 @@ SELECT AddressKey, FullName, Street, City, StateCode, Zip, Country FROM Address 
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT AddressKey, FullName, Street, City, StateCode, Zip, Country FROM dbo.Addre" +
-                "ss";
+            this._commandCollection[0].CommandText = "SELECT FullName, Street, City, StateCode, Zip, Country FROM Address";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -1321,14 +1282,6 @@ SELECT AddressKey, FullName, Street, City, StateCode, Zip, Country FROM Address 
                     this.Adapter.UpdateCommand.Connection.Close();
                 }
             }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string FullName, string Street, string City, string StateCode, string Zip, string Country, int Original_AddressKey, string Original_FullName, string Original_Street, string Original_City, string Original_StateCode, string Original_Zip, string Original_Country) {
-            return this.Update(FullName, Street, City, StateCode, Zip, Country, Original_AddressKey, Original_FullName, Original_Street, Original_City, Original_StateCode, Original_Zip, Original_Country, Original_AddressKey);
         }
     }
     
